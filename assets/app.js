@@ -401,7 +401,7 @@
       const c = D.race.course, p = c && c.profile;
       if (!p) return;
       const ele = p.perKm, totalKm = ele.length - 1;
-      const W = 640, H = 200, padL = 34, padR = 12, padT = 14, padB = 42, maxY = 24;
+      const W = 640, H = 200, padL = 34, padR = 12, padT = 14, padB = 42, maxY = 16;
       const xOf = (km) => padL + (km / totalKm) * (W - padL - padR);
       const yOf = (m) => (H - padB) - (Math.max(0, m) / maxY) * (H - padT - padB);
       let line = `M ${xOf(0).toFixed(1)} ${yOf(ele[0]).toFixed(1)}`;
@@ -415,7 +415,7 @@
       const turn = (km, label) =>
         `<line x1="${xOf(km).toFixed(1)}" y1="${padT}" x2="${xOf(km).toFixed(1)}" y2="${H - padB}" stroke="var(--track-soft)" stroke-dasharray="3 3" stroke-width="1"/>` +
         `<text x="${xOf(km).toFixed(1)}" y="${padT + 8}" font-size="9" fill="var(--track-soft)" text-anchor="middle">${label}</text>`;
-      const ylab = [0, 12, 24].map((m) =>
+      const ylab = [0, 8, 16].map((m) =>
         `<line x1="${padL}" y1="${yOf(m).toFixed(1)}" x2="${W - padR}" y2="${yOf(m).toFixed(1)}" stroke="var(--line)" stroke-width="0.5"/>` +
         `<text x="${padL - 6}" y="${(yOf(m) + 3).toFixed(1)}" font-size="9" fill="var(--track-soft)" text-anchor="end">${m}m</text>`).join('');
       const xlab = [0, 10, 20, 30, 42].map((k) =>
@@ -435,7 +435,7 @@
             <span><span style="display:inline-block;width:11px;height:11px;background:var(--sun);border-radius:2px;vertical-align:-1px"></span> 沖浪海灘段</span>
             <span><span style="display:inline-block;width:11px;height:11px;background:var(--ocean);border-radius:2px;vertical-align:-1px"></span> 內灣 Broadwater 段</span>
           </div>
-          <p style="margin-top:.6rem;font-size:var(--text-sm);color:var(--track-soft)">${esc(p.note)}</p>
+          <p style="margin-top:.6rem;font-size:var(--text-sm);color:var(--track-soft)">${esc(p.note)}${p.source ? ` <span style="opacity:.75">· 資料來源：${esc(p.source)}</span>` : ''}</p>
         </div>`;
     },
 
