@@ -280,6 +280,7 @@
             `<span class="chip">${esc(s.city)}</span>
              <h3 style="font-size:var(--text-lg);margin-top:.5rem">${esc(s.name)}</h3>
              <ul class="note-list" style="margin-top:.6rem">${s.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
+             ${s.info ? `<p style="font-size:var(--text-sm);color:var(--track-soft);margin-top:.5rem;border-top:1px dashed var(--line);padding-top:.5rem">⏰ ${esc(s.info)}</p>` : ''}
              ${s.link ? `<div class="link-row" style="margin-top:.8rem"><a href="${esc(s.link)}" target="_blank" rel="noopener">官方資訊</a></div>` : ''}`)
         );
       });
@@ -309,6 +310,36 @@
       stamp.style.marginTop = 'var(--space-4)';
       stamp.textContent = `最後更新：${D.intel.shoppingUpdated}　${D.intel.shoppingDisclaimer}`;
       node.appendChild(stamp);
+    },
+
+    'local-info'(node) {
+      const grid = el('div', 'card-grid card-grid--2');
+      D.intel.localInfo.items.forEach((it) =>
+        grid.appendChild(el('div', 'card',
+          `<div class="eyebrow">${esc(it.label)}</div><p style="margin-top:.5rem;color:var(--track-soft)">${esc(it.text)}</p>`)));
+      node.appendChild(grid);
+    },
+
+    transport(node) {
+      const tp = D.intel.transport;
+      const grid = el('div', 'card-grid card-grid--2');
+      tp.items.forEach((it) =>
+        grid.appendChild(el('div', 'card',
+          `<div class="eyebrow">${esc(it.label)}</div><p style="margin-top:.5rem;color:var(--track-soft)">${esc(it.text)}</p>`)));
+      node.appendChild(grid);
+      const n = el('p', 'private-note');
+      n.style.marginTop = 'var(--space-4)';
+      n.textContent = tp.note;
+      node.appendChild(n);
+    },
+
+    'race-clothing'(node) {
+      const cl = D.race.clothing;
+      if (!cl) return;
+      node.innerHTML =
+        `<div class="card"><div class="eyebrow">🧥 ${esc(cl.title)}</div>
+          <p class="updated-stamp" style="margin-top:.3rem">${esc(cl.sub)}</p>
+          <ul class="note-list" style="margin-top:.6rem">${cl.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul></div>`;
     },
 
     weather: renderWeather,
@@ -350,6 +381,78 @@
         block('比賽日動線', '📍', r.raceDay) +
         `<div class="card"><div class="eyebrow">🎯 目標與配速</div><p style="margin-top:.6rem;color:var(--track-soft)">${esc(r.goal.paceNote)}</p></div>`;
       node.appendChild(grid);
+    },
+
+    'race-map'(node) {
+      const c = D.race.course;
+      if (!c || !c.mapEmbed) return;
+      node.innerHTML =
+        `<div class="card" style="padding:.5rem">
+          <iframe src="${esc(c.mapEmbed)}" title="黃金海岸馬拉松官方路線地圖" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="width:100%;height:460px;border:0;border-radius:var(--radius-sm);display:block"></iframe>
+        </div>
+        <div class="link-row" style="margin-top:.8rem">
+          <a href="${esc(c.googleMap)}" target="_blank" rel="noopener">在 Google 地圖開啟</a>
+          <a href="${esc(c.gpxDownload)}" target="_blank" rel="noopener">下載 GPX 路線檔</a>
+          <a href="${esc(c.mapLinks[0].url)}" target="_blank" rel="noopener">官方賽道頁</a>
+        </div>`;
+    },
+
+    'race-elevation'(node) {
+      const c = D.race.course, p = c && c.profile;
+      if (!p) return;
+      const ele = p.perKm, totalKm = ele.length - 1;
+      const W = 640, H = 200, padL = 34, padR = 12, padT = 14, padB = 42, maxY = 24;
+      const xOf = (km) => padL + (km / totalKm) * (W - padL - padR);
+      const yOf = (m) => (H - padB) - (Math.max(0, m) / maxY) * (H - padT - padB);
+      let line = `M ${xOf(0).toFixed(1)} ${yOf(ele[0]).toFixed(1)}`;
+      ele.forEach((m, i) => { line += ` L ${xOf(i).toFixed(1)} ${yOf(m).toFixed(1)}`; });
+      const area = `${line} L ${xOf(totalKm).toFixed(1)} ${H - padB} L ${xOf(0).toFixed(1)} ${H - padB} Z`;
+      const band = (s) => {
+        const m = s.km.split(/[–-]/).map(parseFloat);
+        const x1 = xOf(m[0]), x2 = xOf(Math.min(m[1], totalKm));
+        return `<rect x="${x1.toFixed(1)}" y="${H - padB + 6}" width="${(x2 - x1).toFixed(1)}" height="8" rx="2" fill="${s.beach ? 'var(--sun)' : 'var(--ocean)'}"><title>${esc(s.km)}km · ${esc(s.view)}</title></rect>`;
+      };
+      const turn = (km, label) =>
+        `<line x1="${xOf(km).toFixed(1)}" y1="${padT}" x2="${xOf(km).toFixed(1)}" y2="${H - padB}" stroke="var(--track-soft)" stroke-dasharray="3 3" stroke-width="1"/>` +
+        `<text x="${xOf(km).toFixed(1)}" y="${padT + 8}" font-size="9" fill="var(--track-soft)" text-anchor="middle">${label}</text>`;
+      const ylab = [0, 12, 24].map((m) =>
+        `<line x1="${padL}" y1="${yOf(m).toFixed(1)}" x2="${W - padR}" y2="${yOf(m).toFixed(1)}" stroke="var(--line)" stroke-width="0.5"/>` +
+        `<text x="${padL - 6}" y="${(yOf(m) + 3).toFixed(1)}" font-size="9" fill="var(--track-soft)" text-anchor="end">${m}m</text>`).join('');
+      const xlab = [0, 10, 20, 30, 42].map((k) =>
+        `<text x="${xOf(k).toFixed(1)}" y="${H - padB + 32}" font-size="10" fill="var(--track-soft)" text-anchor="middle">${k}km</text>`).join('');
+      node.innerHTML =
+        `<div class="card">
+          <div class="eyebrow">📈 高度剖面（縱軸放大才看得出起伏）</div>
+          <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="高度剖面圖：全程海拔約 0 到 21 公尺，幾乎全平" style="width:100%;height:auto;margin-top:.6rem">
+            ${ylab}
+            <path d="${area}" fill="rgba(22,99,122,0.12)"/>
+            <path d="${line}" fill="none" stroke="var(--ocean)" stroke-width="2"/>
+            ${c.sections.map(band).join('')}
+            ${turn(17.5, 'Miami 折返')}${turn(37, 'Runaway Bay 折返')}
+            ${xlab}
+          </svg>
+          <div style="display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:.5rem;font-size:var(--text-xs);color:var(--track-soft)">
+            <span><span style="display:inline-block;width:11px;height:11px;background:var(--sun);border-radius:2px;vertical-align:-1px"></span> 沖浪海灘段</span>
+            <span><span style="display:inline-block;width:11px;height:11px;background:var(--ocean);border-radius:2px;vertical-align:-1px"></span> 內灣 Broadwater 段</span>
+          </div>
+          <p style="margin-top:.6rem;font-size:var(--text-sm);color:var(--track-soft)">${esc(p.note)}</p>
+        </div>`;
+    },
+
+    'race-sections'(node) {
+      const secs = D.race.course.sections;
+      node.innerHTML =
+        '<div class="stack">' +
+        secs.map((s) =>
+          `<div class="day__card" style="padding:.8rem 1.1rem">
+            <div style="display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap">
+              <span class="chip ${s.beach ? 'chip--sun' : ''}" style="font-family:var(--font-num)">${esc(s.km)} km</span>
+              <strong>${esc(s.view)}</strong>
+            </div>
+            <div style="color:var(--track-soft);font-size:var(--text-sm);margin-top:.3rem">${esc(s.place)}</div>
+            <div style="color:var(--track-soft);font-size:var(--text-xs);margin-top:.2rem">地形：${esc(s.terrain)}</div>
+          </div>`).join('') +
+        '</div>';
     },
 
     'race-course'(node) {

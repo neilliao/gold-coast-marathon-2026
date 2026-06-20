@@ -229,6 +229,24 @@ window.TRIP_DATA = {
         { label: '官方賽道頁（路線圖／Fly-through）', url: 'https://goldcoastmarathon.com.au/marathon-course/' },
         { label: '補給站與醫療', url: 'https://goldcoastmarathon.com.au/aid-stations-and-medical/' },
       ],
+      // 官方 Google My Maps（免 API key 的 iframe 嵌入）
+      mapEmbed: 'https://www.google.com/maps/d/embed?mid=1dHGZwBay3OnhtW0WAjvqMTIyzixpjU4',
+      googleMap: 'https://www.google.com/maps/d/viewer?mid=1dHGZwBay3OnhtW0WAjvqMTIyzixpjU4',
+      gpxDownload: 'https://goldcoastmarathon.com.au/wp-content/uploads/2026/03/2026-ASICS-Gold-Coast-Marathon-Course.gpx_.zip',
+      // 高度剖面：每公里海拔（公尺），由官方 GPX 平滑後得出
+      profile: {
+        note: '世界級平坦路線：全程海拔僅約 0–21m，幾乎貼海平面、沒有真正的坡——官方標總爬升 62m。下圖縱軸放大後才看得出細微起伏，且高度取自官方 GPX（AllTrails 量測，數值僅供參考、可能有誤差），實際路面以現場為準。對配速的影響：基本可當作全平來配，無需為坡度調整策略。',
+        max: 21,
+        perKm: [4.2, 3.6, 3.5, 2.4, 3.9, 4.4, 6.1, 5.9, 5, 6.9, 8.5, 10.2, 11.5, 13.3, 12.4, 11.6, 8.7, 9, 8.6, 8, 8.2, 9.1, 9.7, 9.9, 8.7, 6.9, 7.2, 7.5, 6.1, 7.3, 7.8, 6.4, 4.6, 4.7, 4.1, 4.8, 4.6, 4.2, 3.8, 4.4, 3.7, 3.9, 4.2],
+      },
+      // 路段對照（地點由 Google 反向地理編碼確認；折返點：Miami km17.5、Runaway Bay km37）
+      sections: [
+        { km: '0–4', place: 'Southport · Broadwater Parklands 出發', view: '內灣 Broadwater 水景', terrain: '平 · 跨 Nerang River 橋', beach: false },
+        { km: '4–17.5', place: 'Main Beach → Surfers Paradise → Broadbeach → Mermaid Beach → Miami 折返', view: '沖浪海灘（海濱步道 Esplanade）', terrain: '平坦海濱', beach: true },
+        { km: '17.5–30', place: 'Miami 折返北返，經 Broadbeach、Surfers Paradise、Main Beach', view: '沖浪海灘（回程，部分內側一街區）', terrain: '平坦', beach: true },
+        { km: '30–37', place: 'Southport → Labrador → Runaway Bay 折返', view: '內灣 Broadwater 水景', terrain: '平 · 再跨橋', beach: false },
+        { km: '37–42.2', place: 'Runaway Bay → Southport 終點衝線', view: '內灣 Broadwater · 終點 Broadwater Parklands', terrain: '平坦衝線', beach: false },
+      ],
     },
     schedule: {
       date: '2026-07-05 週日',
@@ -255,6 +273,15 @@ window.TRIP_DATA = {
         'Australia Fair 2km 兒童跑 11:10am',
       ],
     },
+    clothing: {
+      title: '賽事日穿著建議',
+      sub: '依目前預報：低約 8.8°C、高約 18.4°C、降雨機率低、風約 12 km/h',
+      items: [
+        '賽前等待最冷（約 8–9°C）：穿可拋棄式舊外套／舊長袖或大型垃圾袋擋風，起跑後沿途丟棄（賽會多會回收捐贈）。',
+        '起跑穿著：跑動體感比實際氣溫約多 10°C，建議短袖／背心＋短褲為主；怕冷可加可脫式袖套＋薄手套，暖身後收進口袋。',
+        '海岸清晨風寒明顯：排汗底層優於純棉；終點備一件輕量風衣，避免完賽後失溫。',
+      ],
+    },
     result: {
       // 賽後回來填
       finishTime: null,
@@ -269,21 +296,25 @@ window.TRIP_DATA = {
       {
         name: 'Paradise Country 天堂鄉農莊', city: '黃金海岸',
         points: ['澳洲農莊體驗', '無尾熊拍照', '動物與農場表演'],
+        info: '約 10:00–15:30；表演採場次制，入園索取當日時刻表。聖誕與澳紐軍團日（4/25）休園。',
         link: 'https://paradisecountry.com.au/shows-and-presentations',
       },
       {
         name: 'Sanctuary Cove 神仙灣', city: '黃金海岸',
         points: ['濱水餐飲', '精品小店', '遊艇碼頭與高級住宅區氛圍'],
+        info: '免門票、每日開放、免費停車；約 80 家店與得獎遊艇碼頭，自由逛街用餐。',
         link: 'https://sanctuarycove.com/',
       },
       {
         name: 'SkyPoint 觀景台', city: '黃金海岸',
         points: ['Q1 大樓觀景台', '黃金海岸高空視角', '留意日落時段與最後入場時間'],
+        info: '每日約 07:30–21:00（最後入場約 20:30）；成人約 AUD $33 起。7 月日落約下午 5 點，建議 16:00–16:15 上去一次看日夜景。聖誕休館。',
         link: 'https://skypoint.com.au/visit',
       },
       {
         name: 'Tamborine Mountain / Eagle Heights 鷹高藝術小鎮', city: '黃金海岸腹地山區',
         points: ['山區小鎮', '咖啡、藝品、特色小店', '適合慢慢逛，不是衝刺購物型'],
+        info: 'Gallery Walk 店家多每日約 10:00–16:00；逛一圈約 1–2 小時，建議上午前往、避開午後人潮。',
         link: 'https://visittamborinemountain.com.au/',
       },
       {
@@ -326,6 +357,25 @@ window.TRIP_DATA = {
     ],
     shoppingUpdated: '2026-06-20',
     shoppingDisclaimer: '店家會變動，出發前以官方店家目錄為準。',
+    localInfo: {
+      updated: '2026-06-20',
+      items: [
+        { label: '小費', text: '澳洲不強制小費、店家不期待。餐廳優質服務可給約 10%（隨意）、計程車湊整數即可，皆非義務。' },
+        { label: '電壓 / 插頭', text: '230V（常達 240V）／50Hz，插頭 Type I（三支斜扁腳）。手機、筆電充電器多支援 100–240V 僅需轉接頭；110V 吹風機、電鬍刀勿直接用會燒壞。' },
+        { label: '緊急電話', text: '全澳統一 000（警察／救護／消防同號）。' },
+        { label: '叫車', text: 'Uber、DiDi 在黃金海岸都可用（Uber 覆蓋最廣、DiDi 較便宜）；Ola 已退出澳洲。傳統計程車仍可叫。' },
+        { label: '支付', text: '感應刷卡（tap & go）極普及，$100 以下免簽免 PIN，手機／手錶 NFC 通用。帶感應卡最方便，少量現金備用即可。' },
+      ],
+    },
+    transport: {
+      items: [
+        { label: '住宿 → 賽事園區', text: 'Mercure Gold Coast Resort（Palm Meadows／Carrara）到 Broadwater Parklands（Southport）約 8–10km、平日車程 10–15 分；賽事日封路會更久，務必提早。' },
+        { label: '輕軌 G:link', text: '最近站＝Broadwater Parklands，下車跟指標即達會場。賽事日清晨 04:00–12:00 約每 6.5 分一班，憑號碼布／選手證件可免費搭（週日 04:00–15:00）。' },
+        { label: '賽事日交通', text: '首選輕軌（最不受封路影響）；其次叫車於封路圈外接送；最不建議自駕進核心區——Broadwater Parklands 停車場賽事週末全關。賽前至少 1 小時到。' },
+        { label: '布里斯本機場 ↔ 黃金海岸', text: '約 85–95km、自駕 1 小時～1 小時 15 分（尖峰更久）；另有直達巴士約 2 小時。' },
+      ],
+      note: '2026 詳細封路圖官方標示「2026 年初公布」，賽前一週請回查 goldcoastmarathon.com.au/road-closures。',
+    },
   },
 
   /* ---------------------------------------------------------------- 天氣 */
