@@ -215,6 +215,46 @@ window.TRIP_DATA = {
       '前半段壓住配速，不要被現場氣氛帶快。',
       '完賽先補給、伸展、緩走，再回飯店冰敷恢復。',
     ],
+    // 以下為 2026 官方賽事資訊（來源 goldcoastmarathon.com.au，2026-06-20 查）
+    course: {
+      certified: 'AIMS 認證 · 澳洲最平最快路線之一',
+      startFinish: '起終點同一園區：Broadwater Parklands, Marine Parade, Southport（Race Precinct）',
+      description: '海岸線出發，先往南到 Miami 折返點，再往北一路到 Runaway Bay，最後回到 Southport、終點通道就在 Broadwater 海濱旁。',
+      elevation: '總爬升約 62 公尺（幾乎全平）',
+      beachside: '約 29 公里沿海岸跑',
+      aidStations: '全程 16 個補水／補給站，提供 FIXX Nutrition「Fuel X」運動飲料與水',
+      records: { male: '男子 2:07:33（Yuki Takei JPN, 2025）', female: '女子 2:24:22（Yuki Nakamura JPN, 2024）' },
+      scale: '2025 年超過 39,000 名跑者、50+ 國家',
+      mapLinks: [
+        { label: '官方賽道頁（路線圖／Fly-through）', url: 'https://goldcoastmarathon.com.au/marathon-course/' },
+        { label: '補給站與醫療', url: 'https://goldcoastmarathon.com.au/aid-stations-and-medical/' },
+      ],
+    },
+    schedule: {
+      date: '2026-07-05 週日',
+      arrive: '建議 5:15am 抵達（至少賽前 1 小時）',
+      gun: '6:15am 第一波鳴槍',
+      startClosure: '6:55am 起點關閉',
+      cutoff: '關門：鳴槍後 7 小時（末波後 6 小時 40 分）→ 約 13:15 終點陸續關閉',
+      paceGuide: '配速指引 9:30 /km（過起點線後須維持或更快，否則會被收容車）',
+      waves: [
+        'Wave 1 · 6:15am — 菁英／優先 + A 區',
+        'Wave 2 · 6:25am — B 區',
+        'Wave 3 · 6:35am — C 區',
+        'Wave 4 · 6:45am — D & E 區',
+      ],
+      zoneNote: '依號碼布上的字母到對應 Start Zone 集結；蓄意跨區起跑可能被取消成績。',
+    },
+    companionEvents: {
+      date: '2026-07-04 週六 · 團體賽事日（Neil 非主賽）',
+      items: [
+        'China Airlines 半程馬拉松 6:15am（關門 3h20m）',
+        'Southern Cross University 10km 9:25am（關門 1h40m）',
+        'Gold Coast Airport 5km 11:45am（關門 1h10m）',
+        '輪椅 10km 9:15am／輪椅 5km 11:30am',
+        'Australia Fair 2km 兒童跑 11:10am',
+      ],
+    },
     result: {
       // 賽後回來填
       finishTime: null,

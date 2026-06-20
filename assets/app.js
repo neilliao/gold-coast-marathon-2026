@@ -352,6 +352,64 @@
       node.appendChild(grid);
     },
 
+    'race-course'(node) {
+      const c = D.race.course;
+      if (!c) return;
+      node.innerHTML =
+        `<div class="card-grid card-grid--2">
+          <div class="card">
+            <div class="eyebrow">🗺️ 賽道路線</div>
+            <p style="margin-top:.6rem">${esc(c.description)}</p>
+            <dl class="kv" style="margin-top:.8rem">
+              <div class="kv__row"><dt>起 / 終點</dt><dd style="font-family:var(--font);font-weight:600;text-align:right;max-width:60%">${esc(c.startFinish)}</dd></div>
+              <div class="kv__row"><dt>認證</dt><dd style="font-family:var(--font)">${esc(c.certified)}</dd></div>
+              <div class="kv__row"><dt>爬升</dt><dd>${esc(c.elevation)}</dd></div>
+              <div class="kv__row"><dt>沿海</dt><dd>${esc(c.beachside)}</dd></div>
+            </dl>
+            <div class="link-row" style="margin-top:.8rem">${c.mapLinks.map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join('')}</div>
+          </div>
+          <div class="card">
+            <div class="eyebrow">⛲ 補給站</div>
+            <p style="margin-top:.6rem">${esc(c.aidStations)}</p>
+            <hr class="divider" style="margin-block:1rem">
+            <div class="eyebrow">🏆 大會紀錄</div>
+            <dl class="kv" style="margin-top:.6rem">
+              <div class="kv__row"><dt>${esc(c.records.male)}</dt><dd></dd></div>
+              <div class="kv__row"><dt>${esc(c.records.female)}</dt><dd></dd></div>
+            </dl>
+            <p class="updated-stamp" style="margin-top:.6rem">${esc(c.scale)}</p>
+          </div>
+        </div>`;
+    },
+
+    'race-schedule'(node) {
+      const s = D.race.schedule, ce = D.race.companionEvents;
+      if (!s) return;
+      node.innerHTML =
+        `<div class="weather-banner" style="background:linear-gradient(120deg,#fde7e0,#fbd9c8);border-color:var(--warn)">
+          <div class="weather-banner__icon">⏱️</div>
+          <div><div class="weather-banner__title">關門時間</div>
+          <div class="weather-banner__text">${esc(s.cutoff)}　·　${esc(s.paceGuide)}</div></div>
+        </div>
+        <div class="card-grid card-grid--2" style="margin-top:var(--space-4)">
+          <div class="card">
+            <div class="eyebrow">🕕 起跑時程 · ${esc(s.date)}</div>
+            <dl class="kv" style="margin-top:.6rem">
+              <div class="kv__row"><dt>建議抵達</dt><dd>${esc(s.arrive)}</dd></div>
+              <div class="kv__row"><dt>鳴槍</dt><dd>${esc(s.gun)}</dd></div>
+              <div class="kv__row"><dt>起點關閉</dt><dd>${esc(s.startClosure)}</dd></div>
+            </dl>
+            <div class="eyebrow" style="margin-top:1rem">🚩 分波起跑</div>
+            <ul class="note-list" style="margin-top:.6rem">${s.waves.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>
+            <p class="private-note" style="border-style:solid;border-color:var(--line);background:var(--white);color:var(--track-soft);margin-top:.8rem">${esc(s.zoneNote)}</p>
+          </div>
+          <div class="card">
+            <div class="eyebrow">👥 ${esc(ce.date)}</div>
+            <ul class="note-list" style="margin-top:.6rem">${ce.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>
+          </div>
+        </div>`;
+    },
+
     'race-result'(node) {
       const r = D.race.result;
       if (r.finishTime || r.reflection) {
