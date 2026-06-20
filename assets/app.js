@@ -342,6 +342,42 @@
           <ul class="note-list" style="margin-top:.6rem">${cl.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul></div>`;
     },
 
+    'race-splits'(node) {
+      const s = D.race.splits;
+      if (!s) return;
+      const rows = s.rows.map((r) =>
+        `<div class="kv__row"><dt style="font-weight:700;color:var(--track)">${esc(r.km)}</dt><dd style="display:flex;gap:1rem;flex-wrap:wrap"><span>累計 ${esc(r.cum)}</span><span style="color:var(--track-soft)">${esc(r.clock)}</span></dd></div>`).join('');
+      node.innerHTML =
+        `<div class="card">
+          <div class="eyebrow">⏱️ 分段關門參考 · ${esc(s.pace)}</div>
+          <dl class="kv" style="margin-top:.6rem">${rows}</dl>
+          <p style="margin-top:.6rem;font-size:var(--text-sm);color:var(--track-soft)">${esc(s.note)}</p>
+        </div>`;
+    },
+
+    'must-do'(node) {
+      const e = D.essentials;
+      if (!e) return;
+      node.innerHTML =
+        `<div class="card" style="border-color:var(--warn);background:linear-gradient(160deg,#fdeee6,var(--paper))">
+          <div class="eyebrow" style="color:var(--warn)">🚨 出發前一定要做</div>
+          <ul class="note-list" style="margin-top:.6rem">${e.mustDo.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>
+        </div>`;
+    },
+
+    'trip-notes'(node) {
+      const e = D.essentials;
+      if (!e) return;
+      const card = (eyebrow, body) => `<div class="card"><div class="eyebrow">${eyebrow}</div>${body}</div>`;
+      node.innerHTML =
+        `<div class="card-grid card-grid--2">
+          ${card('🧳 集合 & 行李', `<p style="margin-top:.5rem">${esc(e.gather)}</p><p style="margin-top:.5rem;color:var(--track-soft);font-size:var(--text-sm)">${esc(e.baggage)}</p>`)}
+          ${card('🕑 時差 & 緊急', `<p style="margin-top:.5rem">${esc(e.timezone)}</p><p style="margin-top:.5rem;color:var(--track-soft);font-size:var(--text-sm)">${esc(e.emergency)}</p>`)}
+          ${card('💳 團費不含（要另付）', `<ul class="note-list" style="margin-top:.5rem">${e.feeExcludes.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>`)}
+          ${card('🎁 贈送好禮', `<ul class="note-list" style="margin-top:.5rem">${e.gifts.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>`)}
+        </div>`;
+    },
+
     weather: renderWeather,
 
     'weather-banner'(node) {
@@ -407,26 +443,28 @@
       let line = `M ${xOf(0).toFixed(1)} ${yOf(ele[0]).toFixed(1)}`;
       ele.forEach((m, i) => { line += ` L ${xOf(i).toFixed(1)} ${yOf(m).toFixed(1)}`; });
       const area = `${line} L ${xOf(totalKm).toFixed(1)} ${H - padB} L ${xOf(0).toFixed(1)} ${H - padB} Z`;
+      // SVG 內用寫死色碼，不用 var()（Safari 不認 SVG presentation attribute 裡的 CSS 變數）
+      const COL = { ocean: '#16637a', sun: '#f2b330', soft: '#4a525a', line: '#ddd2bf' };
       const band = (s) => {
         const m = s.km.split(/[–-]/).map(parseFloat);
         const x1 = xOf(m[0]), x2 = xOf(Math.min(m[1], totalKm));
-        return `<rect x="${x1.toFixed(1)}" y="${H - padB + 6}" width="${(x2 - x1).toFixed(1)}" height="8" rx="2" fill="${s.beach ? 'var(--sun)' : 'var(--ocean)'}"><title>${esc(s.km)}km · ${esc(s.view)}</title></rect>`;
+        return `<rect x="${x1.toFixed(1)}" y="${H - padB + 6}" width="${(x2 - x1).toFixed(1)}" height="8" rx="2" fill="${s.beach ? COL.sun : COL.ocean}"><title>${esc(s.km)}km · ${esc(s.view)}</title></rect>`;
       };
       const turn = (km, label) =>
-        `<line x1="${xOf(km).toFixed(1)}" y1="${padT}" x2="${xOf(km).toFixed(1)}" y2="${H - padB}" stroke="var(--track-soft)" stroke-dasharray="3 3" stroke-width="1"/>` +
-        `<text x="${xOf(km).toFixed(1)}" y="${padT + 8}" font-size="9" fill="var(--track-soft)" text-anchor="middle">${label}</text>`;
+        `<line x1="${xOf(km).toFixed(1)}" y1="${padT}" x2="${xOf(km).toFixed(1)}" y2="${H - padB}" stroke="${COL.soft}" stroke-dasharray="3 3" stroke-width="1"/>` +
+        `<text x="${xOf(km).toFixed(1)}" y="${padT + 8}" font-size="9" fill="${COL.soft}" text-anchor="middle">${label}</text>`;
       const ylab = [0, 8, 16].map((m) =>
-        `<line x1="${padL}" y1="${yOf(m).toFixed(1)}" x2="${W - padR}" y2="${yOf(m).toFixed(1)}" stroke="var(--line)" stroke-width="0.5"/>` +
-        `<text x="${padL - 6}" y="${(yOf(m) + 3).toFixed(1)}" font-size="9" fill="var(--track-soft)" text-anchor="end">${m}m</text>`).join('');
+        `<line x1="${padL}" y1="${yOf(m).toFixed(1)}" x2="${W - padR}" y2="${yOf(m).toFixed(1)}" stroke="${COL.line}" stroke-width="0.5"/>` +
+        `<text x="${padL - 6}" y="${(yOf(m) + 3).toFixed(1)}" font-size="9" fill="${COL.soft}" text-anchor="end">${m}m</text>`).join('');
       const xlab = [0, 10, 20, 30, 42].map((k) =>
-        `<text x="${xOf(k).toFixed(1)}" y="${H - padB + 32}" font-size="10" fill="var(--track-soft)" text-anchor="middle">${k}km</text>`).join('');
+        `<text x="${xOf(k).toFixed(1)}" y="${H - padB + 32}" font-size="10" fill="${COL.soft}" text-anchor="middle">${k}km</text>`).join('');
       node.innerHTML =
         `<div class="card">
           <div class="eyebrow">📈 高度剖面（縱軸放大才看得出起伏）</div>
           <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="高度剖面圖：全程海拔約 0 到 21 公尺，幾乎全平" style="width:100%;height:auto;margin-top:.6rem">
             ${ylab}
             <path d="${area}" fill="rgba(22,99,122,0.12)"/>
-            <path d="${line}" fill="none" stroke="var(--ocean)" stroke-width="2"/>
+            <path d="${line}" fill="none" stroke="${COL.ocean}" stroke-width="2"/>
             ${c.sections.map(band).join('')}
             ${turn(17.5, 'Miami 折返')}${turn(37, 'Runaway Bay 折返')}
             ${xlab}
