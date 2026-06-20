@@ -1,0 +1,368 @@
+/*
+ * data.js — 黃金海岸馬拉松 2026 旅行網站的單一資料來源
+ *
+ * 維護方式：
+ *   - 全部內容都在這支檔案，Neil 可直接編輯，不需要 build step。
+ *   - 新增照片：把檔案放進 assets/photos/，再到 gallery 區塊把檔名補上。
+ *   - 更新財務：只填分類總額，不要放逐筆明細。
+ *
+ * 公開原則：只放低敏資訊。
+ *   不放：領隊完整電話、房號、護照/簽證/帳戶/信用卡、逐筆消費、私人備忘。
+ *   有用但不適合公開的，用 PRIVATE_NOTE 字串提示去看私人備忘或原始 PDF。
+ */
+
+const PRIVATE_NOTE = '詳細聯絡資訊請看私人備忘或原始 PDF。';
+
+window.TRIP_DATA = {
+  /* ---------------------------------------------------------------- 旅程主體 */
+  trip: {
+    title: 'Gold Coast Marathon',
+    subtitle: '東澳黃金海岸馬拉松旅行',
+    packageName: '紐澳假期 · 東澳黃金馬拉松 6+1 天',
+    dateStart: '2026-07-02',
+    dateEnd: '2026-07-08',
+    route: 'TPE → BNE → Gold Coast',
+    cities: ['布里斯本 Brisbane', '黃金海岸 Gold Coast'],
+    marathonDate: '2026-07-05',
+    tagline: '一個人把訓練帶到南半球，跑一場冬天的海岸全馬。',
+    meaning:
+      '這不是旅行社的廣告頁，是我自己的跑步旅行紀錄。出發前拿來查行程，旅行中拿來記錄，回來後拿來回味。把一段練了很久的路，放到地球另一邊的冬天去完成。',
+  },
+
+  /* ---------------------------------------------------------------- 航班 */
+  flights: {
+    note: '航班代號與表定時間可先放；登機門、報到櫃台、實際機型會變動，出發前再查。',
+    segments: [
+      {
+        code: 'BR315',
+        airline: '長榮航空 EVA Air',
+        from: '桃園 TPE',
+        to: '布里斯本 BNE',
+        depart: '2026-07-02 09:10',
+        arrive: '2026-07-02 20:00',
+        dir: '去程',
+      },
+      {
+        code: 'BR316',
+        airline: '長榮航空 EVA Air',
+        from: '布里斯本 BNE',
+        to: '桃園 TPE',
+        depart: '2026-07-06 22:15',
+        arrive: '2026-07-07 05:05 (+1)',
+        dir: '回程',
+      },
+    ],
+    // 出發前手動補：實際資訊會變動，不寫死
+    manualFields: [
+      { label: '報到櫃台', value: null },
+      { label: '登機門', value: null },
+      { label: '實際機型', value: null },
+      { label: '座位', value: null },
+    ],
+    seatTips: [
+      '長程經濟艙若可選位，優先走道位，方便補水、上廁所、伸展。',
+      '想睡且不常起身，可考慮靠窗位。',
+      '避開廁所旁、廚房旁與最後一排，通常較吵、椅背角度也可能受限。',
+      '若有加價選位，可看逃生門排或前排，但要先確認規定與費用。',
+      '實際推薦座位等機型確認後，再對照官方座位圖。',
+    ],
+    links: [
+      { label: '桃園機場出發航班查詢', url: 'https://www.taoyuan-airport.com/flight_depart' },
+      { label: '長榮航空 全球機場資訊', url: 'https://www.evaair.com/en-tw/fly-prepare/at-the-airport/worldwide-airports/' },
+      { label: '長榮 787-10 機型/座位圖', url: 'https://www.evaair.com/en-us/fly-prepare/our-fleets/passenger-airplanes/787-10/' },
+      { label: '長榮 777-300ER 機型/座位圖', url: 'https://www.evaair.com/en-tw/fly-prepare/our-fleets/passenger-airplanes/777-300ER/' },
+      { label: 'FlightAware 追蹤 BR315', url: 'https://www.flightaware.com/live/flight/EVA315' },
+    ],
+  },
+
+  /* ---------------------------------------------------------------- 飯店 */
+  hotels: [
+    {
+      key: 'grand-chancellor',
+      name: 'Hotel Grand Chancellor Brisbane',
+      city: '布里斯本',
+      address: '23 Leichhardt St, Brisbane QLD 4000',
+      nights: '2026-07-02 第一晚',
+      facilities: ['免費 Wi-Fi', '24 小時櫃台', '屋頂溫水泳池', '停車（可能付費）', '客房服務', '禁菸房型'],
+      reminders: [
+        '抵達第一晚，重點是睡眠、補水、整理全馬裝備。',
+        '有空就先確認早餐時間、退房時間、叫車與附近便利店。',
+      ],
+      links: [
+        { label: '官方設施頁', url: 'https://www.grandchancellorhotels.com/hotel-grand-chancellor-brisbane/hotel-information/services-and-facilities' },
+        { label: '官方飯店頁', url: 'https://www.grandchancellorhotels.com/hotel-grand-chancellor-brisbane' },
+      ],
+    },
+    {
+      key: 'mercure',
+      name: 'Mercure Gold Coast Resort',
+      city: '黃金海岸',
+      address: 'Palm Meadows Drive, Palm Meadows, Gold Coast QLD 4211',
+      nights: '7/03–7/05 賽前與賽後主住宿',
+      facilities: ['兩座泳池', '網球場', 'SPA', '健身中心', '高爾夫練習場', 'The Green 餐廳', 'Wi-Fi / 停車以官方訂房頁為準'],
+      reminders: [
+        '賽前在房內標一個「裝備攤開區」，把全馬配備一次擺好。',
+        '賽後恢復：冰敷、補水、伸展、睡眠。',
+        '飯店不在衝浪者天堂正中心，外出交通看團體安排或叫車。',
+      ],
+      links: [
+        { label: '官方網站', url: 'https://www.mercuregoldcoastresort.com.au/' },
+        { label: 'Accor 官方頁', url: 'https://all.accor.com/hotel/9052/index.en.shtml' },
+      ],
+    },
+  ],
+
+  /* ---------------------------------------------------------------- 每日行程 */
+  itinerary: [
+    {
+      date: '2026-07-02', weekday: '週四', tag: '出發',
+      city: '桃園 → 布里斯本',
+      summary: '飛越赤道，落地南半球的冬天。',
+      activities: ['BR315 桃園 09:10 起飛', '布里斯本 20:00 落地', '入住 Hotel Grand Chancellor Brisbane'],
+      meals: '機上餐食',
+      stay: 'Hotel Grand Chancellor Brisbane',
+      notes: '長程飛行記得多補水、起身走動；落地先睡好，調整時差。',
+    },
+    {
+      date: '2026-07-03', weekday: '週五', tag: '布里斯本',
+      city: '布里斯本市區',
+      summary: '城市暖身日，傍晚移往黃金海岸。',
+      activities: ['南岸公園 South Bank', '市政廳 City Hall', '故事橋 Story Bridge', '庫莎山 Mt Coot-tha', '賽會場報到', '入住 Mercure Gold Coast Resort'],
+      meals: '依團體安排',
+      stay: 'Mercure Gold Coast Resort',
+      notes: '賽前兩天，走路觀光即可，不要久站操腿。報到拿物資、確認賽事動線。',
+    },
+    {
+      date: '2026-07-04', weekday: '週六', tag: '賽事日 · 非主賽',
+      city: '黃金海岸',
+      summary: '團體半馬與 10K 日，我休息養腿。',
+      activities: ['半馬與 10K 相關接送（Neil 非主賽事）', '天堂鄉農莊 Paradise Country', '神仙灣 Sanctuary Cove', '入住 Mercure Gold Coast Resort'],
+      meals: '依團體安排',
+      stay: 'Mercure Gold Coast Resort',
+      notes: '全馬前一天：吃好、喝足、早睡，腿留給明天。裝備今晚先全部攤開檢查。',
+    },
+    {
+      date: '2026-07-05', weekday: '週日', tag: '全馬日 · 主賽事',
+      city: '黃金海岸',
+      summary: '今天是主場：42K 全程馬拉松。',
+      activities: ['Neil 跑全馬 42K', '太平洋購物中心 Pacific Fair', 'SkyPoint 觀景台', '直升機遊黃金海岸', '入住 Mercure Gold Coast Resort'],
+      meals: '賽前/賽後補給依計畫',
+      stay: 'Mercure Gold Coast Resort',
+      notes: '冬天清晨偏冷，賽前準備拋棄式外套保暖。完賽後先恢復，再排觀光。',
+      highlight: true,
+    },
+    {
+      date: '2026-07-06', weekday: '週一', tag: '山城 · 返程',
+      city: '黃金海岸 → 布里斯本機場',
+      summary: '山城藝術小鎮、酒莊與最後採買，夜班機回家。',
+      activities: ['鷹高藝術小鎮 Tamborine Mountain / Eagle Heights', '藍騰酒莊', '免稅店', '海港城購物中心 Harbour Town', '布里斯本機場', 'BR316 22:15 起飛'],
+      meals: '依團體安排',
+      stay: '夜間航班',
+      notes: '夜班機，白天行程偏輕鬆。完賽後第二天，逛街用慢步調。',
+    },
+    {
+      date: '2026-07-07', weekday: '週二', tag: '回台',
+      city: '抵達桃園',
+      summary: '清晨落地，旅程正式結束。',
+      activities: ['BR316 桃園 05:05 抵達', '入境、提領行李、返家'],
+      meals: '—',
+      stay: '回家',
+      notes: '紅眼航班，回家先補眠。',
+    },
+    {
+      date: '2026-07-08', weekday: '週三', tag: '收尾',
+      city: '台灣 · 在家',
+      summary: '保留給整理、恢復與旅行後補記。',
+      activities: ['整理行李與照片', '身體恢復', '回來後把日誌補完'],
+      meals: '—',
+      stay: '在家',
+      notes: '把這趟的觀察、身體狀態、最值得記住的事，趁記憶還新時寫下來。',
+    },
+  ],
+
+  /* ---------------------------------------------------------------- 馬拉松 */
+  race: {
+    name: 'ASICS Gold Coast Marathon 2026',
+    eventDate: '2026-07-05',
+    distance: '全程馬拉松 42.195K',
+    official: 'https://goldcoastmarathon.com.au/',
+    overview:
+      '黃金海岸馬拉松是南半球的冬季賽事，沿海岸線出發，路線平坦、以好天氣與快速賽道聞名。7/04 的半馬與 10K 是團體賽事日，我的主賽事是 7/05 的全馬 42K。',
+    goal: {
+      target: null, // 例如 'sub-4' 或目標完賽時間，出發前填
+      paceNote: '配速計畫出發前依訓練狀態填入；冬季涼溫對全馬有利，前半段控速、後半段再決定推不推。',
+    },
+    gear: [
+      '比賽鞋（已習慣、已試跑過長距離）',
+      '排汗上衣 + 短褲',
+      '壓縮小腿套 / 襪（看習慣）',
+      '運動手錶（GPS、心率）',
+      '號碼布、別針 / 號碼帶',
+      '能量膠 × 依補給計畫',
+      '防曬、凡士林 / 止磨膏',
+      '賽前保暖：拋棄式外套或舊衣（冬天清晨冷）',
+      '帽子 / 太陽眼鏡（日出後）',
+    ],
+    fueling: [
+      '賽前 2–3 小時正常早餐，賽前最後補一次水。',
+      '依配速計畫每 30–45 分鐘補一支能量膠。',
+      '善用補給站補水/運動飲料，天氣涼也不要漏喝。',
+      '完賽後 30 分鐘內補蛋白質與碳水，開始恢復。',
+    ],
+    raceDay: [
+      '冬季清晨偏冷，提早到、保暖到最後一刻再脫拋棄式外套。',
+      '確認起跑分區、寄物、廁所動線。',
+      '前半段壓住配速，不要被現場氣氛帶快。',
+      '完賽先補給、伸展、緩走，再回飯店冰敷恢復。',
+    ],
+    result: {
+      // 賽後回來填
+      finishTime: null,
+      placing: null,
+      reflection: null,
+    },
+  },
+
+  /* ---------------------------------------------------------------- 行前情報 */
+  intel: {
+    sights: [
+      {
+        name: 'Paradise Country 天堂鄉農莊', city: '黃金海岸',
+        points: ['澳洲農莊體驗', '無尾熊拍照', '動物與農場表演'],
+        link: 'https://paradisecountry.com.au/shows-and-presentations',
+      },
+      {
+        name: 'Sanctuary Cove 神仙灣', city: '黃金海岸',
+        points: ['濱水餐飲', '精品小店', '遊艇碼頭與高級住宅區氛圍'],
+        link: 'https://sanctuarycove.com/',
+      },
+      {
+        name: 'SkyPoint 觀景台', city: '黃金海岸',
+        points: ['Q1 大樓觀景台', '黃金海岸高空視角', '留意日落時段與最後入場時間'],
+        link: 'https://skypoint.com.au/visit',
+      },
+      {
+        name: 'Tamborine Mountain / Eagle Heights 鷹高藝術小鎮', city: '黃金海岸腹地山區',
+        points: ['山區小鎮', '咖啡、藝品、特色小店', '適合慢慢逛，不是衝刺購物型'],
+        link: 'https://visittamborinemountain.com.au/',
+      },
+      {
+        name: '南岸公園 South Bank', city: '布里斯本',
+        points: ['河岸人造沙灘與綠地', '步行友善', '市區暖身散步好去處'],
+        link: 'https://visit.brisbane.qld.au/places-to-go/inner-city/south-bank',
+      },
+      {
+        name: '故事橋 Story Bridge / 市政廳 / 庫莎山', city: '布里斯本',
+        points: ['城市地標', '庫莎山可俯瞰市景', '賽前輕鬆觀光，不要操腿'],
+        link: null,
+      },
+    ],
+    shopping: [
+      {
+        name: 'Harbour Town Gold Coast', type: 'Outlet 折扣',
+        note: '超過 220 間店、日常折扣最高可到 70%。適合集中逛運動品牌、戶外、太陽眼鏡與 3C。',
+        picks: [
+          { label: '運動跑鞋/服飾', stores: 'ASICS、Nike、New Balance、Puma' },
+          { label: '戶外旅行', stores: 'Kathmandu' },
+          { label: '太陽眼鏡', stores: 'Oakley Vault、Sunglass Hut' },
+          { label: '3C', stores: 'JB Hi-Fi' },
+          { label: '舒適鞋', stores: 'ECCO' },
+        ],
+        directory: 'https://www.harbourtowngoldcoast.com.au/stores',
+        home: 'https://www.harbourtowngoldcoast.com.au/',
+      },
+      {
+        name: 'Pacific Fair', type: '大型綜合商場',
+        note: '不只是 outlet，適合賽後或空檔補買運動、鞋款、男裝、3C。',
+        picks: [
+          { label: '運動', stores: 'Adidas Performance、Rebel、ASICS' },
+          { label: '跑鞋/鞋款', stores: "The Athlete's Foot、Hype DC、SoleStreet" },
+          { label: '3C/通訊', stores: 'JB Hi-Fi、Vodafone' },
+          { label: '男性基本款', stores: 'Academy Brand、JD Sports' },
+        ],
+        directory: 'https://www.pacificfair.com.au/stores-services',
+        home: 'https://www.pacificfair.com.au/',
+      },
+    ],
+    shoppingUpdated: '2026-06-20',
+    shoppingDisclaimer: '店家會變動，出發前以官方店家目錄為準。',
+  },
+
+  /* ---------------------------------------------------------------- 天氣 */
+  weather: {
+    updatedAt: '2026-06-20 16:43 台北時間',
+    apiNote: '使用 Open-Meteo 免金鑰 API。查詢時 API 僅開放到 2026-07-05，7/06–7/08 顯示待更新。',
+    locations: [
+      { key: 'gold-coast', name: '黃金海岸', latitude: -28.0167, longitude: 153.4, primary: true },
+      { key: 'brisbane', name: '布里斯本', latitude: -27.4698, longitude: 153.0251 },
+    ],
+    marathonReminder: {
+      date: '2026-07-05',
+      text: '全馬日目前預報偏涼（低溫約 8.8°C、高溫約 18.4°C），降雨機率不高。賽前等待會冷，準備拋棄式外套。出發前務必重查。',
+    },
+    climateNote: '黃金海岸 7 月為冬季：日間約 17–21°C、清晨可低至 8–10°C，整體乾爽、少雨。',
+    // 行前研究時的快照，作為 API 取不到時的 fallback
+    snapshot: {
+      'gold-coast': [
+        { date: '2026-07-02', code: 80, max: 20.6, min: 15.7, rain: 16, wind: 16.0 },
+        { date: '2026-07-03', code: 80, max: 19.0, min: 12.6, rain: 25, wind: 15.0 },
+        { date: '2026-07-04', code: 0, max: 17.7, min: 9.5, rain: 16, wind: 11.9 },
+        { date: '2026-07-05', code: 51, max: 18.4, min: 8.8, rain: 19, wind: 12.1 },
+      ],
+      brisbane: [
+        { date: '2026-07-02', code: 53, max: 21.8, min: 15.0, rain: 18, wind: 12.7 },
+        { date: '2026-07-03', code: 53, max: 18.0, min: 12.6, rain: 24, wind: 17.4 },
+      ],
+    },
+  },
+
+  /* ---------------------------------------------------------------- 旅行日誌（佔位，回來補） */
+  journal: [
+    { date: '2026-07-02', title: '', mood: '', body: '', oneThing: '', photo: null },
+    { date: '2026-07-03', title: '', mood: '', body: '', oneThing: '', photo: null },
+    { date: '2026-07-04', title: '', mood: '', body: '', oneThing: '', photo: null },
+    { date: '2026-07-05', title: '', mood: '', body: '', oneThing: '', photo: null },
+    { date: '2026-07-06', title: '', mood: '', body: '', oneThing: '', photo: null },
+    { date: '2026-07-07', title: '', mood: '', body: '', oneThing: '', photo: null },
+    { date: '2026-07-08', title: '', mood: '', body: '', oneThing: '', photo: null },
+  ],
+
+  /* ---------------------------------------------------------------- 照片牆 */
+  gallery: [
+    { key: 'brisbane', label: '布里斯本', photos: [] },
+    { key: 'gold-coast', label: '黃金海岸', photos: [] },
+    { key: 'marathon', label: '馬拉松', photos: [] },
+    { key: 'food', label: '飲食', photos: [] },
+    { key: 'street', label: '街景', photos: [] },
+    { key: 'quiet', label: '安靜片刻', photos: [] },
+  ],
+
+  /* ---------------------------------------------------------------- 出發清單 */
+  checklist: [
+    { category: '證件與出發', items: ['護照（效期 6 個月以上）', '電子簽證 / ETA 確認', '登機證 / 行程單', '旅遊保險', '少量澳幣現金 + 信用卡', '海關申報注意（見下方入境提醒）'] },
+    { category: '跑步裝備', items: ['比賽鞋（已試跑）', '排汗上衣 + 短褲', '壓縮套/襪', '運動手錶 + 充電線', '號碼帶、別針', '能量膠', '防曬、止磨膏', '賽前拋棄式保暖外套'] },
+    { category: '衣物與天氣', items: ['冬季外套（日夜溫差大）', '長袖 + 短袖混搭', '保暖帽 / 手套（清晨冷）', '輕便雨具', '泳衣（飯店泳池）', '休閒鞋'] },
+    { category: '電器與充電', items: ['手機 + 充電線', '行動電源', '萬用轉接頭（澳洲 Type I）', '手錶/耳機充電', '相機（選帶）'] },
+    { category: '藥品與身體照護', items: ['個人常備藥', '腸胃藥、止痛藥', 'OK 繃、肌貼', '電解質', '保濕/護唇（乾燥）'] },
+    { category: '澳洲入境提醒', items: ['不可攜帶肉類、蛋、奶、種子、生鮮蔬果', '藥品備英文標示或處方', '木製品、蜂蜜需申報', '不確定就申報，罰則很重'] },
+    { category: '回台提醒', items: ['免稅菸酒額度確認', '保留消費單據（個人留存）', '農畜產品勿帶回', '整理照片與日誌素材'] },
+  ],
+
+  /* ---------------------------------------------------------------- 財務（只放分類總額） */
+  budget: {
+    currency: 'TWD',
+    note: '公開頁只顯示分類統計，不顯示每筆消費明細。金額回來後再補。',
+    categories: [
+      { label: '團費', amount: null },
+      { label: '簽證與旅遊文件', amount: null },
+      { label: '小費', amount: null },
+      { label: '餐飲', amount: null },
+      { label: '當地交通', amount: null },
+      { label: '購物', amount: null },
+      { label: '跑步相關支出', amount: null },
+      { label: '其他雜支', amount: null },
+    ],
+  },
+
+  PRIVATE_NOTE,
+};

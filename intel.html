@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>行前情報 · Gold Coast Marathon 2026</title>
+  <meta name="description" content="航班查詢、飯店設施、景點筆記、購物清單與當地天氣，旅行中會想查的都整理在這。" />
+  <meta name="color-scheme" content="light" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至主要內容</a>
+  <noscript><span class="noscript-note">情報卡片與天氣需要開啟 JavaScript 才會顯示。</span></noscript>
+
+  <header class="site-header">
+    <div class="wrap nav">
+      <a class="brand" href="index.html">
+        <span class="brand__mark">GC</span>
+        <span class="brand__text"><strong>Gold Coast Marathon</strong><span>2026 · Neil 的跑步旅行</span></span>
+      </a>
+      <button class="nav-toggle" aria-controls="nav-links" aria-expanded="false">☰ 選單</button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">首頁</a></li>
+        <li><a href="itinerary.html">行程</a></li>
+        <li><a href="intel.html">行前情報</a></li>
+        <li><a href="race.html">馬拉松</a></li>
+        <li><a href="journal.html">日誌</a></li>
+        <li><a href="gallery.html">照片</a></li>
+        <li><a href="checklist.html">清單</a></li>
+        <li><a href="budget.html">財務</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="page-head">
+      <div class="wrap page-head__inner">
+        <span class="eyebrow">🧭 行前情報</span>
+        <h1>旅行中會想查的，都在這</h1>
+        <p>航班、飯店、景點、購物、天氣。動態資訊（登機門、櫃台、機型）不寫死，提供官方查詢入口。</p>
+      </div>
+    </div>
+
+    <section class="section wrap" id="flights">
+      <span class="eyebrow">✈️ 航班情報</span>
+      <h2 class="section-title">BR315 / BR316</h2>
+      <div style="margin-top:var(--space-5)" data-render="flights"></div>
+    </section>
+
+    <section class="section--tight wrap" id="hotels">
+      <span class="eyebrow">🏨 飯店情報</span>
+      <h2 class="section-title">兩間住宿</h2>
+      <div style="margin-top:var(--space-5)" data-render="hotels"></div>
+    </section>
+
+    <section class="section--tight wrap" id="sights">
+      <span class="eyebrow">📍 景點情報</span>
+      <h2 class="section-title">布里斯本與黃金海岸</h2>
+      <div style="margin-top:var(--space-5)" data-render="sights"></div>
+    </section>
+
+    <section class="section--tight wrap" id="shopping">
+      <span class="eyebrow">🛍️ 購物情報</span>
+      <h2 class="section-title">運動、跑鞋、3C 的去處</h2>
+      <div style="margin-top:var(--space-5)" data-render="shopping"></div>
+    </section>
+
+    <section class="section wrap" id="weather">
+      <span class="eyebrow">🌤️ 天氣情報</span>
+      <h2 class="section-title">黃金海岸 &amp; 布里斯本</h2>
+      <p class="section-lead" data-weather-stamp>天氣由 Open-Meteo 即時查詢；超出可查日期顯示「待更新」。</p>
+
+      <div style="margin-top:var(--space-5)" data-render="weather-banner"></div>
+
+      <h3 style="margin-top:var(--space-6);font-size:var(--text-lg)">黃金海岸</h3>
+      <div style="margin-top:var(--space-3)" data-render="weather" data-loc="gold-coast"></div>
+
+      <h3 style="margin-top:var(--space-6);font-size:var(--text-lg)">布里斯本</h3>
+      <div style="margin-top:var(--space-3)" data-render="weather" data-loc="brisbane"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap site-footer__inner">
+      <div><strong style="color:#fff">Gold Coast Marathon 2026</strong><br><small>Neil 的黃金海岸馬拉松旅行紀錄</small></div>
+      <small>© <span data-year>2026</span> · 天氣由 <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> 提供 · 店家資訊以官方目錄為準</small>
+    </div>
+  </footer>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/app.js" defer></script>
+</body>
+</html>

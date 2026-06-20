@@ -1,0 +1,3 @@
+# 旅行照片放這裡。
+# 放好後到 assets/data.js 的 gallery 區塊，把對應分類的 photos 補上：
+#   { key: 'gold-coast', label: '黃金海岸', photos: [ { file: 'surfers.jpg', alt: '衝浪者天堂' } ] }
