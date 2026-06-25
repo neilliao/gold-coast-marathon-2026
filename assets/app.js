@@ -417,6 +417,18 @@
         block('比賽日動線', '📍', r.raceDay) +
         `<div class="card"><div class="eyebrow">🎯 目標與配速</div><p style="margin-top:.6rem;color:var(--track-soft)">${esc(r.goal.paceNote)}</p></div>`;
       node.appendChild(grid);
+      const gp = r.goal.pacePlan;
+      if (gp) {
+        const plan = el('div', 'card');
+        plan.style.marginTop = '1rem';
+        plan.innerHTML =
+          `<div class="eyebrow">🏃 配速補給計畫 · ${esc(r.goal.target)}</div>
+           <p style="margin-top:.5rem;font-size:var(--text-sm);color:var(--track-soft)">${esc(gp.note)}</p>
+           <dl class="kv" style="margin-top:.8rem">${gp.phases.map((p) =>
+             `<div class="kv__row"><dt style="font-weight:700;color:var(--track)">${esc(p.km)}</dt><dd style="display:flex;gap:.7rem;flex-wrap:wrap"><span style="font-weight:600;color:var(--track)">${esc(p.ratio)}</span><span>${esc(p.pace)}</span><span style="color:var(--track-soft)">${esc(p.hr)}</span><span style="color:var(--track-soft)">${esc(p.tip)}</span></dd></div>`).join('')}</dl>
+           <p style="margin-top:.6rem;font-size:var(--text-sm);color:var(--track-soft)">⚡ ${esc(gp.fuel)}</p>`;
+        node.appendChild(plan);
+      }
     },
 
     'race-map'(node) {
