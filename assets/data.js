@@ -335,6 +335,24 @@ window.TRIP_DATA = {
         { km: '終點 42.2K', cum: '約 6:40', clock: '約 13:25（末波關門）' },
       ],
     },
+    // 逐站配速對照表：數字由 app.js 依下方 segments 平均配速即時算（不手刻），對齊官方 16 個補給站（每 2.5K）
+    paceTable: {
+      note: '到每個補給站時，你的累計時間（晶片計時）落在這附近就照計畫走。配速＝run-walk 含走路的平均，非關門時間。海拔用官方 GPX，全程貼海平面。',
+      segments: [
+        { to: 21, secPerKm: 420, ratio: '跑8走1', pace: '7:00/km' },     // 0–21K
+        { to: 32, secPerKm: 455, ratio: '跑6走1', pace: '7:35/km' },     // 21–32K
+        { to: 42.195, secPerKm: 520, ratio: '跑5走2', pace: '8:40/km' }, // 32–42.2K
+      ],
+      // marathon 16 站，每 2.5K（WS=純水，RS=Fuel X 熱帶+水，gels 只在 30K）
+      stations: [
+        { km: 2.5, type: 'WS' }, { km: 5, type: 'RS' }, { km: 7.5, type: 'WS' }, { km: 10, type: 'RS' },
+        { km: 12.5, type: 'WS' }, { km: 15, type: 'RS' }, { km: 17.5, type: 'WS', turn: 'Miami 折返' }, { km: 20, type: 'RS' },
+        { km: 22.5, type: 'WS' }, { km: 25, type: 'RS' }, { km: 27.5, type: 'WS' }, { km: 30, type: 'RS', gels: true },
+        { km: 32.5, type: 'WS' }, { km: 35, type: 'RS' }, { km: 37.5, type: 'WS', turn: 'Runaway Bay 折返(km37)' }, { km: 40, type: 'RS' },
+      ],
+      finish: 42.195,
+    },
+
     // ASICS Sport & Leisure Expo（選手報到/號碼布領取）+ 賽事園區設施，來源 2026 官方賽事手冊
     expo: {
       title: 'ASICS Sport & Leisure Expo（選手報到 / 號碼布領取）',

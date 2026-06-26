@@ -564,6 +564,64 @@
         </div>`;
     },
 
+    'race-pace-table'(node) {
+      const pt = D.race.paceTable, prof = D.race.course && D.race.course.profile;
+      if (!pt) return;
+      const segs = pt.segments;
+      // 累計秒數（晶片計時）到距離 d
+      const cumSec = (d) => {
+        let t = 0, prev = 0;
+        for (const s of segs) { const hi = Math.min(d, s.to); if (hi > prev) t += (hi - prev) * s.secPerKm; prev = s.to; if (d <= s.to) break; }
+        return t;
+      };
+      const segAt = (d) => segs.findIndex((s) => d <= s.to);
+      const fmt = (sec) => { const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = Math.round(sec % 60); return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; };
+      const ele = prof && prof.perKm;
+      const eleAt = (d) => { if (!ele) return null; const lo = Math.floor(d), hi = Math.min(Math.ceil(d), ele.length - 1); const a = ele[lo], b = ele[hi]; return Math.round((a + (b - a) * (d - lo)) * 10) / 10; };
+      const PHASE = ['#2f8f6b', '#d9941a', '#b5403a']; // 綠 / 琥珀 / 紅，對齊配速卡
+      const rows = [...pt.stations, { km: pt.finish, finish: true }];
+      const tr = (r) => {
+        const pi = segAt(r.km), col = PHASE[pi < 0 ? PHASE.length - 1 : pi];
+        const kmLabel = r.finish ? '🏁 42.2' : `${r.km}`;
+        // 補給+點合併一欄：圖示(💧水 / ⛽Fuel X) + 膠 + 折返
+        let cell = '';
+        if (r.finish) cell = '<strong>衝線！</strong>';
+        else {
+          cell = r.type === 'RS' ? '⛽' : '💧';
+          if (r.gels) cell += ' 🟢膠';
+          if (r.turn) cell += ` <span style="color:var(--ocean-deep);font-weight:600;font-size:var(--text-xs)">🔁${esc(r.turn.replace(/\s*折返.*/, ''))}</span>`;
+        }
+        return `<tr style="border-left:4px solid ${col}">
+          <td style="font-family:var(--font-num);font-weight:700;padding:.45rem .55rem;white-space:nowrap">${kmLabel}<span style="color:var(--track-soft);font-weight:400;font-size:var(--text-xs)"> km</span></td>
+          <td style="font-family:var(--font-num);padding:.45rem .55rem;white-space:nowrap">${fmt(cumSec(r.km))}</td>
+          <td style="font-family:var(--font-num);color:var(--track-soft);padding:.45rem .55rem;white-space:nowrap">${eleAt(r.km) != null ? eleAt(r.km) + 'm' : '—'}</td>
+          <td style="padding:.45rem .55rem;font-size:var(--text-sm);white-space:nowrap">${cell}</td>
+        </tr>`;
+      };
+      const legend = segs.map((s, i) =>
+        `<span style="display:inline-flex;align-items:center;gap:.3rem"><span style="display:inline-block;width:11px;height:11px;border-radius:2px;background:${PHASE[i]}"></span>${i === 0 ? '0' : segs[i - 1].to}–${s.to === D.race.paceTable.finish ? '42.2' : s.to}K ${esc(s.ratio)} ${esc(s.pace)}</span>`).join('');
+      node.innerHTML =
+        `<div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:1rem 1.1rem .6rem">
+            <div class="eyebrow">📋 逐站配速・海拔對照</div>
+            <div style="display:flex;gap:.9rem;flex-wrap:wrap;margin-top:.6rem;font-size:var(--text-xs);color:var(--track)">${legend}</div>
+          </div>
+          <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:var(--text-sm)">
+              <thead><tr style="background:var(--ocean-soft);color:var(--ocean-deep);text-align:left">
+                <th style="padding:.45rem .55rem;font-weight:700">距離</th>
+                <th style="padding:.45rem .55rem;font-weight:700">累計</th>
+                <th style="padding:.45rem .55rem;font-weight:700">海拔</th>
+                <th style="padding:.45rem .55rem;font-weight:700">補給·點</th>
+              </tr></thead>
+              <tbody>${rows.map(tr).join('')}</tbody>
+            </table>
+          </div>
+          <p style="padding:.7rem 1.1rem .2rem;margin:0;font-size:var(--text-xs);color:var(--track-soft)">💧 補水站　⛽ Fuel X 站（熱帶口味＋水）　🟢 能量膠（僅 30K·限量）　🔁 折返點</p>
+          <p style="padding:.2rem 1.1rem 1rem;margin:0;font-size:var(--text-sm);color:var(--track-soft)">${esc(pt.note)}</p>
+        </div>`;
+    },
+
     'race-expo'(node) {
       const e = D.race.expo;
       if (!e) return;
