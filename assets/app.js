@@ -426,7 +426,8 @@
            <p style="margin-top:.5rem;font-size:var(--text-sm);color:var(--track-soft)">${esc(gp.note)}</p>
            <dl class="kv" style="margin-top:.8rem">${gp.phases.map((p) =>
              `<div class="kv__row"><dt style="font-weight:700;color:var(--track)">${esc(p.km)}</dt><dd style="display:flex;gap:.7rem;flex-wrap:wrap"><span style="font-weight:600;color:var(--track)">${esc(p.ratio)}</span><span>${esc(p.pace)}</span><span style="color:var(--track-soft)">${esc(p.hr)}</span><span style="color:var(--track-soft)">${esc(p.tip)}</span></dd></div>`).join('')}</dl>
-           <p style="margin-top:.6rem;font-size:var(--text-sm);color:var(--track-soft)">⚡ ${esc(gp.fuel)}</p>`;
+           <p style="margin-top:.6rem;font-size:var(--text-sm);color:var(--track-soft)">⚡ ${esc(gp.fuel)}</p>
+           ${gp.pacers ? `<p style="margin-top:.4rem;font-size:var(--text-sm);color:var(--track-soft)">🎈 ${esc(gp.pacers)}</p>` : ''}`;
         node.appendChild(plan);
       }
     },
@@ -559,6 +560,32 @@
           <div class="card">
             <div class="eyebrow">👥 ${esc(ce.date)}</div>
             <ul class="note-list" style="margin-top:.6rem">${ce.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>
+          </div>
+        </div>`;
+    },
+
+    'race-expo'(node) {
+      const e = D.race.expo;
+      if (!e) return;
+      const f = e.facilities;
+      node.innerHTML =
+        `<div class="card-grid card-grid--2">
+          <div class="card" style="border-color:var(--sun)">
+            <div class="eyebrow" style="color:var(--track)">🎽 ${esc(e.title)}</div>
+            <p style="margin-top:.6rem;color:var(--track-soft);font-size:var(--text-sm)">${esc(e.venue)}</p>
+            <dl class="kv" style="margin-top:.8rem">${e.hours.map((h) => {
+              const p = h.split('·');
+              return `<div class="kv__row"><dt style="font-weight:700;color:var(--track)">${esc((p[0] || h).trim())}</dt><dd>${esc((p[1] || '').trim())}</dd></div>`;
+            }).join('')}</dl>
+            <p style="margin-top:.6rem;font-size:var(--text-sm);color:var(--track-soft)">${esc(e.free)}</p>
+            <p class="private-note" style="border-style:solid;border-color:var(--line);background:var(--white);color:var(--track-soft);margin-top:.8rem">${esc(e.note)}</p>
+          </div>
+          <div class="card">
+            <div class="eyebrow">📍 ${esc(f.title)}</div>
+            <ul class="note-list" style="margin-top:.6rem">${f.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>
+            <hr class="divider" style="margin-block:1rem">
+            <p style="font-size:var(--text-sm)">🏅 ${esc(e.finisher)}</p>
+            <p style="margin-top:.6rem;font-size:var(--text-sm);color:var(--track-soft)">📲 ${esc(e.tracking)}</p>
           </div>
         </div>`;
     },

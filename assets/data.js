@@ -225,7 +225,8 @@ window.TRIP_DATA = {
           { km: '21–32K', ratio: '跑 6 走 1', pace: '實際約 7:35/km', hr: '心率 <165', tip: '開始覺得累很正常' },
           { km: '32–42K', ratio: '跑 5 走 2', pace: '實際約 8:40/km', hr: '過 170 就走一段', tip: '完賽優先、補給防抽筋' },
         ],
-        fuel: '16 站 Fuel X 每站都進，每 30–40 分補水＋電解質，30K 後尤其防抽筋。',
+        fuel: '16 站 Fuel X 每站都進，每 30–40 分補水＋電解質，30K 後尤其防抽筋（能量膠補給站在 30.5K）。',
+        pacers: '官方配速員（GCM Pacers）會舉氣球＋背號標時間，依「淨時間（晶片計時）」配速、目標讓你比設定時間快約 30 秒完賽。配速組有 4:00 / 4:15 / 4:30 / 4:45 / 5:00 / 5:30 / 6:00 / 6:40。你可在起跑區找 5:30 氣球當參考，但 run-walk 策略下仍以自己節奏為主、把它當上限就好。',
       },
     },
     gear: [
@@ -249,6 +250,9 @@ window.TRIP_DATA = {
       '冬季清晨偏冷，提早到、保暖到最後一刻再脫拋棄式外套。',
       '確認起跑分區、寄物、廁所動線。',
       '前半段壓住配速，不要被現場氣氛帶快。',
+      '不要戴罩耳式耳機／AirPods（安全規定，要聽得到工作人員與急救指示）；想聽音樂用骨傳導或開放式耳機。',
+      '靠左跑、超車才靠右；要停下移到左側，別停在路中央。補給站杯子丟在站後約 50 公尺的白色大袋，膠包裝也丟進桶子別亂丟（會滑）。',
+      '終點通道持續前進、不要停下自拍（沿途與終點都有官方照）；先進 Recovery 補給，再領完賽衣與獎牌。',
       '完賽先補給、伸展、緩走，再回飯店冰敷恢復。',
     ],
     // 以下為 2026 官方賽事資訊（來源 goldcoastmarathon.com.au，2026-06-20 查）
@@ -258,7 +262,7 @@ window.TRIP_DATA = {
       description: '海岸線出發，先往南到 Miami 折返點，再往北一路到 Runaway Bay，最後回到 Southport、終點通道就在 Broadwater 海濱旁。',
       elevation: '總爬升約 62 公尺（幾乎全平）',
       beachside: '約 29 公里沿海岸跑',
-      aidStations: '全程 16 個補水／補給站，提供 FIXX Nutrition「Fuel X」運動飲料與水',
+      aidStations: '全程 16 個補水／補給站，提供 FIXX Nutrition「Fuel X」運動飲料（熱帶口味）與水；能量膠補給站在 30.5K（抽筋好發段前，記得拿）。',
       records: { male: '男子 2:07:33（Yuki Takei JPN, 2025）', female: '女子 2:24:22（Yuki Nakamura JPN, 2024）' },
       scale: '2025 年超過 39,000 名跑者、50+ 國家',
       mapLinks: [
@@ -289,8 +293,8 @@ window.TRIP_DATA = {
       date: '2026-07-05 週日',
       arrive: '建議 5:15am 抵達（至少賽前 1 小時）',
       gun: '6:15am 第一波鳴槍',
-      startClosure: '6:55am 起點關閉',
-      cutoff: '關門：鳴槍後 7 小時（末波後 6 小時 40 分）→ 約 13:15 終點陸續關閉',
+      startClosure: '6:05am 各分區須就位、6:45am 末波（W4）起跑後管制',
+      cutoff: '關門：鳴槍後 6 小時 40 分（官方手冊 GUN TIME）→ 約 12:55 終點關閉。你預估 5h30（約 11:45 前完賽），餘裕逾 1 小時。',
       paceGuide: '配速指引 9:30 /km（過起點線後須維持或更快，否則會被收容車）',
       waves: [
         'Wave 1 · 6:15am — 菁英／優先 + A 區',
@@ -298,7 +302,7 @@ window.TRIP_DATA = {
         'Wave 3 · 6:35am — C 區',
         'Wave 4 · 6:45am — D & E 區',
       ],
-      zoneNote: '依號碼布上的字母到對應 Start Zone 集結；蓄意跨區起跑可能被取消成績。',
+      zoneNote: '6:05am 前各分區（A–E）須在號碼布字母對應的 Start Zone 就位，之後管制進場；蓄意跨區起跑可能被取消成績。想跟比自己慢的親友一起跑，可往後到較慢的分區起跑。菁英首位完賽約 8:20am、頒獎 9:40am。',
     },
     companionEvents: {
       date: '2026-07-04 週六 · 團體賽事日（Neil 非主賽）',
@@ -320,14 +324,37 @@ window.TRIP_DATA = {
       ],
     },
     splits: {
-      note: '官方只公布「總關門 7 小時（鳴槍計）／6h40m（末波計）」與配速指引 9:30/km，沒有逐站關門時間。下表是依配速指引換算的分段參考（以最後一波 6:45 起算，最保守）；維持在這之內就安全。實際起跑波次依你的 Start Zone 而定，越前面的波次餘裕越多。',
-      pace: '關門配速 9:30 /km',
+      note: '官方手冊只公布總關門 6 小時 40 分（鳴槍計，GUN TIME）與配速指引 9:30/km，沒有逐站關門時間。下表是依 9:30/km 從鳴槍（6:15）換算的「最晚通過」參考（最保守的算法）；維持在這之內就安全。你的目標 5h30 在每個分段都有大幅餘裕。',
+      pace: '關門配速 9:30 /km（鳴槍計）',
       rows: [
-        { km: '10K', cum: '約 1:35', clock: '約 08:20' },
-        { km: '半程 21.1K', cum: '約 3:20', clock: '約 10:05' },
-        { km: '30K', cum: '約 4:45', clock: '約 11:30' },
-        { km: '終點 42.2K', cum: '約 6:40', clock: '約 13:25（末波關門）' },
+        { km: '10K', cum: '約 1:35', clock: '約 07:50' },
+        { km: '半程 21.1K', cum: '約 3:20', clock: '約 09:35' },
+        { km: '30K', cum: '約 4:45', clock: '約 11:00' },
+        { km: '終點 42.2K', cum: '約 6:40', clock: '約 12:55（關門）' },
       ],
+    },
+    // ASICS Sport & Leisure Expo（選手報到/號碼布領取）+ 賽事園區設施，來源 2026 官方賽事手冊
+    expo: {
+      title: 'ASICS Sport & Leisure Expo（選手報到 / 號碼布領取）',
+      venue: 'Gold Coast Convention & Exhibition Centre 會展中心 · 2684–2690 Gold Coast Highway, Broadbeach',
+      free: '免費入場，逾 60 家攤位（ASICS 鞋服、補給、裝備），現場有免費 WiFi。',
+      hours: [
+        '週四 7/02 · 12:00–19:00',
+        '週五 7/03 · 09:00–20:00',
+        '週六 7/04 · 09:00–16:00',
+      ],
+      note: '選手包與號碼布一般在此領取——你是跟團，實際領取方式／時間請跟領隊確認（可能由領隊統一代領）。會展中心在 Broadbeach，與賽事園區（Southport）是不同地點，搭輕軌可達。',
+      facilities: {
+        title: '賽事園區（Broadwater Parklands, Southport）',
+        items: [
+          '寄物 Bag Drop、廁所、補水站、資訊 booth、失物／走失帳篷',
+          '終點後 Recovery 恢復區（水果、飲水）→ 再到完賽衣／獎牌領取點',
+          'Event Lawn 有食物飲料、Better Beer 酒吧、大螢幕直播',
+          '接送下車區在 Davenport St（走到園區約 5 分鐘）',
+        ],
+      },
+      finisher: '完賽禮：官方完賽衣 + GCM26 紀念品 + 獎牌 + 完賽證書（2026 獎牌以海浪漣漪為設計）。',
+      tracking: '家人想即時追蹤：下載新版「ASICS Gold Coast Marathon」App（live tracking／賽道圖／成績，舊 2025 版要刪掉重裝），或看官方 YouTube／Facebook 直播（週日 6:00–9:00 QLD 時間）。',
     },
     result: {
       // 賽後回來填
@@ -417,11 +444,13 @@ window.TRIP_DATA = {
     transport: {
       items: [
         { label: '住宿 → 賽事園區', text: 'Mercure Gold Coast Resort（Palm Meadows／Carrara）到 Broadwater Parklands（Southport）約 8–10km、平日車程 10–15 分；賽事日封路會更久，務必提早。' },
-        { label: '輕軌 G:link', text: '最近站＝Broadwater Parklands，下車跟指標即達會場。賽事日清晨 04:00–12:00 約每 6.5 分一班，憑號碼布／選手證件可免費搭（週日 04:00–15:00）。' },
-        { label: '賽事日交通', text: '首選輕軌（最不受封路影響）；其次叫車於封路圈外接送；最不建議自駕進核心區——Broadwater Parklands 停車場賽事週末全關。賽前至少 1 小時到。' },
-        { label: '布里斯本機場 ↔ 黃金海岸', text: '約 85–95km、自駕 1 小時～1 小時 15 分（尖峰更久）；另有直達巴士約 2 小時。' },
+        { label: '輕軌 G:link（首選）', text: '最近站＝Broadwater Parklands，下車跟指標即達會場。憑號碼布免費搭（週日 04:00–15:00）。週日班距：04:00–07:00 約每 6.5 分、07:00–14:00 約每 7.5 分一班。' },
+        { label: '封路（2026 已確認）', text: '賽事日（週日 7/05）封路 3:30am 起、隨賽事完成陸續開放、全部約 2:30pm 前恢復；封路範圍 Paradise Point 到 Miami。' },
+        { label: '接駁巴士（備援）', text: '週日輕軌若爆滿有接駁巴士：Broadbeach South（4:30–5:30、末班 5:15）、Surfers Paradise 的 Cavill Ave／Cypress Ave（4:30–5:45、末班 5:30）。' },
+        { label: '自駕 / 接送', text: '接送下車區在 Davenport St（經 Nerang St 進、Nind St 西向出，走到園區約 5 分）。Broadwater Parklands 停車場（水上運動中心）6/22–7/09 全關，別開進核心區；賽前至少 1 小時到。' },
+        { label: '布里斯本機場 ↔ 黃金海岸', text: '約 85–95km、自駕 1 小時～1 小時 15 分（尖峰更久）；另有直達巴士約 2 小時。6/27–7/19 鐵路施工，往返布里斯本部分改鐵路接駁巴士到 Helensvale 再轉輕軌，車程可能拉長。' },
       ],
-      note: '2026 詳細封路圖官方標示「2026 年初公布」，賽前一週請回查 goldcoastmarathon.com.au/road-closures。',
+      note: '封路與大眾運輸以官方為準：goldcoastmarathon.com.au/road-closures；往返布里斯本先用 Translink Journey Planner 查最新班次（施工期班次會變動）。',
     },
   },
 
