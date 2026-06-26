@@ -225,7 +225,7 @@ window.TRIP_DATA = {
           { km: '21–32K', ratio: '跑 6 走 1', pace: '實際約 7:35/km', hr: '心率 <165', tip: '開始覺得累很正常' },
           { km: '32–42K', ratio: '跑 5 走 2', pace: '實際約 8:40/km', hr: '過 170 就走一段', tip: '完賽優先、補給防抽筋' },
         ],
-        fuel: '16 站每站都進補水＋電解質，每 30–40 分一支自備能量膠，30K 後尤其防抽筋（現場膠只在 30K 站且限量，務必自備）。',
+        fuel: '能量膠建議每 5K 一支（≈每 40 分，剛好對齊 Fuel X 站，好記又好沖），全程約 8 支；每 7.5K（≈1 小時）偏少、32K 後容易空。補水＋電解質每站都進，32K 後尤其防抽筋。現場膠只在 30K 站且限量，務必自備。',
         pacers: '官方配速員（GCM Pacers）會舉氣球＋背號標時間，依「淨時間（晶片計時）」配速、目標讓你比設定時間快約 30 秒完賽。配速組有 4:00 / 4:15 / 4:30 / 4:45 / 5:00 / 5:30 / 6:00 / 6:40。你可在起跑區找 5:30 氣球當參考，但 run-walk 策略下仍以自己節奏為主、把它當上限就好。',
       },
     },
@@ -335,21 +335,27 @@ window.TRIP_DATA = {
         { km: '終點 42.2K', cum: '約 6:40', clock: '約 13:25（末波關門）' },
       ],
     },
-    // 逐站配速對照表：數字由 app.js 依下方 segments 平均配速即時算（不手刻），對齊官方 16 個補給站（每 2.5K）
+    // 逐站配速對照表：數字由 app.js 依下方 segments 平均配速即時算（不手刻）。地點由官方 GPX 路線逐站反向地理編碼（Google Maps）得出，對齊官方 16 個補給站（每 2.5K）
     paceTable: {
-      note: '到每個補給站時，你的累計時間（晶片計時）落在這附近就照計畫走。配速＝run-walk 含走路的平均，非關門時間。海拔用官方 GPX，全程貼海平面。',
+      note: '「預估時刻」假設你在 D/E 區、6:45 末波、約 6:50 過起跑線。你的波次越前面就整列往前移；以你的實際起跑時間＋累計時間為準。地點由官方 GPX 反查，給家人對照「我大概幾點在哪」。',
+      startClock: '6:50',
       segments: [
         { to: 21, secPerKm: 420, ratio: '跑8走1', pace: '7:00/km' },     // 0–21K
         { to: 32, secPerKm: 455, ratio: '跑6走1', pace: '7:35/km' },     // 21–32K
         { to: 42.195, secPerKm: 520, ratio: '跑5走2', pace: '8:40/km' }, // 32–42.2K
       ],
-      // marathon 16 站，每 2.5K（WS=純水，RS=Fuel X 熱帶+水，gels 只在 30K）
+      // marathon 16 站，每 2.5K（WS=純水，RS=Fuel X 熱帶+水，gels 只在 30K）；place 由 GPX 座標反查
       stations: [
-        { km: 2.5, type: 'WS' }, { km: 5, type: 'RS' }, { km: 7.5, type: 'WS' }, { km: 10, type: 'RS' },
-        { km: 12.5, type: 'WS' }, { km: 15, type: 'RS' }, { km: 17.5, type: 'WS', turn: 'Miami 折返' }, { km: 20, type: 'RS' },
-        { km: 22.5, type: 'WS' }, { km: 25, type: 'RS' }, { km: 27.5, type: 'WS' }, { km: 30, type: 'RS', gels: true },
-        { km: 32.5, type: 'WS' }, { km: 35, type: 'RS' }, { km: 37.5, type: 'WS', turn: 'Runaway Bay 折返(km37)' }, { km: 40, type: 'RS' },
+        { km: 2.5, type: 'WS', place: 'Main Beach（內灣段）' }, { km: 5, type: 'RS', place: 'Main Beach' },
+        { km: 7.5, type: 'WS', place: 'Main Beach Pde' }, { km: 10, type: 'RS', place: 'Surfers Paradise · Cavill Ave' },
+        { km: 12.5, type: 'WS', place: 'Broadbeach' }, { km: 15, type: 'RS', place: 'Mermaid Beach' },
+        { km: 17.5, type: 'WS', turn: 'Miami 折返', place: 'Miami（南端折返）' }, { km: 20, type: 'RS', place: 'Mermaid Beach（回程）' },
+        { km: 22.5, type: 'WS', place: 'Broadbeach（回程）' }, { km: 25, type: 'RS', place: 'Surfers/Main Beach Pde' },
+        { km: 27.5, type: 'WS', place: 'Main Beach' }, { km: 30, type: 'RS', gels: true, place: 'Southport（回到出發地）' },
+        { km: 32.5, type: 'WS', place: 'Southport（轉北）' }, { km: 35, type: 'RS', place: 'Biggera Waters' },
+        { km: 37.5, type: 'WS', turn: 'Runaway Bay 折返', place: 'Runaway Bay（北端折返）' }, { km: 40, type: 'RS', place: 'Labrador（回程）' },
       ],
+      finishPlace: 'Southport（終點園區）',
       finish: 42.195,
     },
 

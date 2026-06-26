@@ -578,8 +578,13 @@
       const fmt = (sec) => { const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = Math.round(sec % 60); return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; };
       const ele = prof && prof.perKm;
       const eleAt = (d) => { if (!ele) return null; const lo = Math.floor(d), hi = Math.min(Math.ceil(d), ele.length - 1); const a = ele[lo], b = ele[hi]; return Math.round((a + (b - a) * (d - lo)) * 10) / 10; };
+      // 預估時刻 = 起跑時鐘 + 累計秒（先取整到分，避免進位出現 :60）
+      const sc = (pt.startClock || '6:50').split(':').map(Number), startSec = sc[0] * 3600 + sc[1] * 60;
+      const hm = (totalSec) => { const tm = Math.round(totalSec / 60); return `${Math.floor(tm / 60) % 24}:${String(tm % 60).padStart(2, '0')}`; };
+      const clock = (sec) => hm(startSec + sec);
+      const elapsed = (sec) => { const tm = Math.round(sec / 60); return `${Math.floor(tm / 60)}:${String(tm % 60).padStart(2, '0')}`; };
       const PHASE = ['#2f8f6b', '#d9941a', '#b5403a']; // 綠 / 琥珀 / 紅，對齊配速卡
-      const rows = [...pt.stations, { km: pt.finish, finish: true }];
+      const rows = [...pt.stations, { km: pt.finish, finish: true, place: pt.finishPlace }];
       const tr = (r) => {
         const pi = segAt(r.km), col = PHASE[pi < 0 ? PHASE.length - 1 : pi];
         const kmLabel = r.finish ? '🏁 42.2' : `${r.km}`;
@@ -589,13 +594,19 @@
         else {
           cell = r.type === 'RS' ? '⛽' : '💧';
           if (r.gels) cell += ' 🟢膠';
-          if (r.turn) cell += ` <span style="color:var(--ocean-deep);font-weight:600;font-size:var(--text-xs)">🔁${esc(r.turn.replace(/\s*折返.*/, ''))}</span>`;
+          if (r.turn) cell += ` <span style="color:var(--ocean-deep);font-weight:600;font-size:var(--text-xs)">🔁</span>`;
         }
+        const sec = cumSec(r.km);
         return `<tr style="border-left:4px solid ${col}">
-          <td style="font-family:var(--font-num);font-weight:700;padding:.45rem .55rem;white-space:nowrap">${kmLabel}<span style="color:var(--track-soft);font-weight:400;font-size:var(--text-xs)"> km</span></td>
-          <td style="font-family:var(--font-num);padding:.45rem .55rem;white-space:nowrap">${fmt(cumSec(r.km))}</td>
-          <td style="font-family:var(--font-num);color:var(--track-soft);padding:.45rem .55rem;white-space:nowrap">${eleAt(r.km) != null ? eleAt(r.km) + 'm' : '—'}</td>
-          <td style="padding:.45rem .55rem;font-size:var(--text-sm);white-space:nowrap">${cell}</td>
+          <td style="padding:.45rem .55rem">
+            <div style="font-family:var(--font-num);font-weight:700">${kmLabel}<span style="color:var(--track-soft);font-weight:400;font-size:var(--text-xs)"> km</span> <span style="font-size:var(--text-sm)">${cell}</span></div>
+            ${r.place ? `<div style="font-size:var(--text-xs);color:var(--track-soft);margin-top:.1rem">${esc(r.place)}</div>` : ''}
+          </td>
+          <td style="padding:.45rem .55rem;white-space:nowrap;text-align:right">
+            <div style="font-family:var(--font-num);font-weight:700;color:var(--ocean-deep)">${clock(sec)}</div>
+            <div style="font-family:var(--font-num);font-size:var(--text-xs);color:var(--track-soft)">+${elapsed(sec)}</div>
+          </td>
+          <td style="font-family:var(--font-num);color:var(--track-soft);padding:.45rem .55rem;white-space:nowrap;text-align:right">${eleAt(r.km) != null ? eleAt(r.km) + 'm' : '—'}</td>
         </tr>`;
       };
       const legend = segs.map((s, i) =>
@@ -603,21 +614,20 @@
       node.innerHTML =
         `<div class="card" style="padding:0;overflow:hidden">
           <div style="padding:1rem 1.1rem .6rem">
-            <div class="eyebrow">📋 逐站配速・海拔對照</div>
+            <div class="eyebrow">📋 逐站配速・時刻・地點對照</div>
             <div style="display:flex;gap:.9rem;flex-wrap:wrap;margin-top:.6rem;font-size:var(--text-xs);color:var(--track)">${legend}</div>
           </div>
           <div style="overflow-x:auto">
             <table style="width:100%;border-collapse:collapse;font-size:var(--text-sm)">
               <thead><tr style="background:var(--ocean-soft);color:var(--ocean-deep);text-align:left">
-                <th style="padding:.45rem .55rem;font-weight:700">距離</th>
-                <th style="padding:.45rem .55rem;font-weight:700">累計</th>
-                <th style="padding:.45rem .55rem;font-weight:700">海拔</th>
-                <th style="padding:.45rem .55rem;font-weight:700">補給·點</th>
+                <th style="padding:.45rem .55rem;font-weight:700">地點 / 距離 / 補給</th>
+                <th style="padding:.45rem .55rem;font-weight:700;text-align:right">預估時刻</th>
+                <th style="padding:.45rem .55rem;font-weight:700;text-align:right">海拔</th>
               </tr></thead>
               <tbody>${rows.map(tr).join('')}</tbody>
             </table>
           </div>
-          <p style="padding:.7rem 1.1rem .2rem;margin:0;font-size:var(--text-xs);color:var(--track-soft)">💧 補水站　⛽ Fuel X 站（熱帶口味＋水）　🟢 能量膠（僅 30K·限量）　🔁 折返點</p>
+          <p style="padding:.7rem 1.1rem .2rem;margin:0;font-size:var(--text-xs);color:var(--track-soft)">時刻＝起跑時鐘＋累計（+）　💧 補水站　⛽ Fuel X 站　🟢 膠（僅 30K·限量）　🔁 折返點</p>
           <p style="padding:.2rem 1.1rem 1rem;margin:0;font-size:var(--text-sm);color:var(--track-soft)">${esc(pt.note)}</p>
         </div>`;
     },
