@@ -369,7 +369,7 @@ window.TRIP_DATA = {
         '週五 7/03 · 09:00–20:00',
         '週六 7/04 · 09:00–16:00',
       ],
-      note: '號碼布在 Expo 內的 Check-in Centre 領取，官方建議「自己親領」；若請人代領，需帶你的 entry certificate（報名確認證明）。全馬建議週六去領（週五歷年最擠）。你是跟團，實際自領或領隊代領請先跟領隊敲定。會展中心在 Broadbeach，與賽事園區（Southport）是不同地點，搭輕軌可達；GCCEC 停車免費 1 小時。',
+      note: '號碼布在 Expo 內的 Check-in Centre 領取，官方建議「自己親領」；若請人代領，需帶你的 entry certificate（報名確認證明）。全馬建議週六去領（週五歷年最擠）。你是跟團，號碼布由領隊代領、不必自己跑 Expo（代領需備你的 entry certificate／報名確認，由領隊處理）。會展中心在 Broadbeach，與賽事園區（Southport）是不同地點，搭輕軌可達；GCCEC 停車免費 1 小時。',
       facilities: {
         title: '賽事園區（Broadwater Parklands, Southport）',
         items: [
@@ -434,7 +434,7 @@ window.TRIP_DATA = {
         note: '超過 220 間店、日常折扣最高可到 70%。適合集中逛運動品牌、戶外、太陽眼鏡與 3C。',
         picks: [
           { label: '運動跑鞋/服飾', stores: 'ASICS、Nike、New Balance、Puma' },
-          { label: '戶外旅行', stores: 'Kathmandu' },
+          { label: '戶外/露營', stores: 'Macpac（Adventure Hub·有 Sea to Summit／Salomon／Mammut／Yeti）、Kathmandu' },
           { label: '太陽眼鏡', stores: 'Oakley Vault、Sunglass Hut' },
           { label: '3C', stores: 'JB Hi-Fi' },
           { label: '舒適鞋', stores: 'ECCO' },
@@ -448,14 +448,27 @@ window.TRIP_DATA = {
         picks: [
           { label: '運動', stores: 'Adidas Performance、Rebel、ASICS' },
           { label: '跑鞋/鞋款', stores: "The Athlete's Foot、Hype DC、SoleStreet" },
+          { label: '戶外', stores: 'Kathmandu（NZ 戶外服飾·輕量旅行配件）' },
           { label: '3C/通訊', stores: 'JB Hi-Fi、Vodafone' },
           { label: '男性基本款', stores: 'Academy Brand、JD Sports' },
         ],
         directory: 'https://www.pacificfair.com.au/stores-services',
         home: 'https://www.pacificfair.com.au/',
       },
+      {
+        name: '戶外・露營裝備（Sea to Summit 等）', type: '戶外・露營',
+        note: 'Neil 想找 Sea to Summit 這類輕量化露營／健行裝備。最順路＝7/6 Harbour Town 的 Macpac（Adventure Hub，確定有 Sea to Summit，又是 outlet 價），不必脫隊專程；想挑全系列再考慮專程去 Wild Earth。',
+        picks: [
+          { label: '🥇最順路 · Harbour Town（7/6）', stores: 'Macpac Adventure Hub — Sea to Summit／Salomon／Mammut／Yeti' },
+          { label: '賽後順手 · Pacific Fair（7/5）', stores: 'Kathmandu（偏自家品牌·無 Sea to Summit）' },
+          { label: '全系列 · 要專程', stores: 'Wild Earth｜Burleigh Heads, 25 Central Dr｜一–六 9–17、日 10–15' },
+          { label: '露營量販 · 要專程', stores: 'Anaconda｜Ashmore, 353 Southport-Nerang Rd（帳篷睡袋大店）' },
+        ],
+        directory: 'https://seatosummit.com.au/pages/dealer-locator',
+        home: 'https://www.wildearth.com.au/brand/Sea-to-Summit',
+      },
     ],
-    shoppingUpdated: '2026-06-20',
+    shoppingUpdated: '2026-06-27',
     shoppingDisclaimer: '店家會變動，出發前以官方店家目錄為準。',
     localInfo: {
       updated: '2026-06-20',
