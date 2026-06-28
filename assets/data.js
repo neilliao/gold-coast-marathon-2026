@@ -546,6 +546,7 @@ window.TRIP_DATA = {
 
   /* ---------------------------------------------------------------- 照片牆 */
   gallery: [
+    { key: 'feed', label: '旅程隨拍', photos: [] },
     { key: 'brisbane', label: '布里斯本', photos: [] },
     { key: 'gold-coast', label: '黃金海岸', photos: [] },
     { key: 'marathon', label: '馬拉松', photos: [] },
