@@ -333,6 +333,26 @@
       node.appendChild(n);
     },
 
+    safety(node) {
+      const s = D.intel.safety;
+      if (!s) return;
+      node.innerHTML =
+        `<div class="card" style="border-color:var(--track-soft)">
+           <div class="eyebrow">🌏 會地震嗎？</div>
+           <p style="margin-top:.5rem;color:var(--track-soft)">${esc(s.quakeNote)}</p>
+         </div>`;
+      const grid = el('div', 'card-grid card-grid--2');
+      grid.style.marginTop = 'var(--space-4)';
+      s.items.forEach((it) =>
+        grid.appendChild(el('div', 'card',
+          `<div class="eyebrow">${esc(it.label)}</div><p style="margin-top:.5rem;color:var(--track-soft)">${esc(it.text)}</p>`)));
+      node.appendChild(grid);
+      const stamp = el('p', 'updated-stamp');
+      stamp.style.marginTop = 'var(--space-4)';
+      stamp.textContent = `最後更新：${s.updated}　緊急資訊以官方為準。`;
+      node.appendChild(stamp);
+    },
+
     'race-clothing'(node) {
       const cl = D.race.clothing;
       if (!cl) return;
