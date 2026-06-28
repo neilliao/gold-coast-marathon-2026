@@ -29,6 +29,58 @@
     return m ? `${+m[2]}/${+m[3]}` : iso;
   };
 
+  /* -------------------------------------------------- GitHub 即時資料來源 */
+  // 照片與財務改成「手機直接上傳／編輯 GitHub → 網站即時讀」，不必改 code。
+  // 公開 repo 免登入即可讀；GitHub API 帶 CORS，瀏覽器可直接 fetch。
+  const GH = { owner: 'neilliao', repo: 'gold-coast-marathon-2026', branch: 'main' };
+  const IMG_RE = /\.(jpe?g|png|webp|gif|avif)$/i;
+  const ghUrl = (path) =>
+    `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}?ref=${GH.branch}`;
+
+  async function ghListDir(path) {
+    const res = await fetch(ghUrl(path), {
+      headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store',
+    });
+    if (!res.ok) throw new Error('gh dir ' + res.status);
+    const arr = await res.json();
+    return Array.isArray(arr) ? arr : [];
+  }
+  async function ghReadFile(path) {
+    const res = await fetch(ghUrl(path), {
+      headers: { Accept: 'application/vnd.github.raw' }, cache: 'no-store',
+    });
+    if (!res.ok) throw new Error('gh file ' + res.status);
+    return res.text();
+  }
+  // budget.csv：兩欄「分類,金額」，回 [{label, amount}]
+  function parseBudgetCSV(text) {
+    return String(text).split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
+      .map((line) => {
+        const i = line.indexOf(',');
+        const label = (i < 0 ? line : line.slice(0, i)).trim();
+        const raw = (i < 0 ? '' : line.slice(i + 1)).trim().replace(/[,\s$]/g, '');
+        const amount = raw === '' ? null : (Number.isFinite(+raw) ? +raw : null);
+        return { label, amount };
+      })
+      .filter((r) => r.label && r.label !== '分類');
+  }
+  function renderPhotos(grid, sec, list, label) {
+    grid.innerHTML = '';
+    if (list.length) {
+      list.forEach((p) => {
+        const img = el('img');
+        img.loading = 'lazy';
+        img.src = p.src;
+        img.alt = p.alt || label;
+        grid.appendChild(img);
+      });
+    } else {
+      for (let i = 0; i < 3; i++) grid.appendChild(el('div', 'photo-ph', '照片待補'));
+    }
+    const chip = sec.querySelector('[data-count]');
+    if (chip) chip.textContent = `${list.length} 張`;
+  }
+
   /* ---------------------------------------------------------------- Nav */
   function initNav() {
     const toggle = $('.nav-toggle');
@@ -718,23 +770,33 @@
     },
 
     gallery(node) {
-      D.gallery.forEach((cat) => {
+      const cats = D.gallery || [];
+      const grids = {};
+      cats.forEach((cat) => {
         const sec = el('section', 'gallery-cat');
+        sec.innerHTML =
+          `<div class="gallery-cat__head"><h3>${esc(cat.label)}</h3><span class="chip" data-count>… 張</span></div>`;
         const grid = el('div', 'photo-grid');
-        if (cat.photos.length) {
-          cat.photos.forEach((p) => {
-            const img = el('img');
-            img.loading = 'lazy';
-            img.src = 'assets/photos/' + p.file;
-            img.alt = p.alt || cat.label;
-            grid.appendChild(img);
-          });
-        } else {
-          for (let i = 0; i < 3; i++) grid.appendChild(el('div', 'photo-ph', '照片待補'));
-        }
-        sec.innerHTML = `<div class="gallery-cat__head"><h3>${esc(cat.label)}</h3><span class="chip">${cat.photos.length || 0} 張</span></div>`;
+        // 先用 data.js 既有照片當底（多半是空的→佔位），抓到 GitHub 後覆蓋
+        renderPhotos(grid, sec,
+          (cat.photos || []).map((p) => ({ src: 'assets/photos/' + p.file, alt: p.alt || cat.label })),
+          cat.label);
         sec.appendChild(grid);
         node.appendChild(sec);
+        grids[cat.key] = { sec, grid };
+      });
+      // 逐分類向 GitHub 即時抓 assets/photos/<分類>/ 內的照片
+      cats.forEach((cat) => {
+        ghListDir('assets/photos/' + cat.key)
+          .then((files) => {
+            const imgs = files
+              .filter((f) => f.type === 'file' && IMG_RE.test(f.name))
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((f) => ({ src: f.download_url, alt: cat.label }));
+            const g = grids[cat.key];
+            if (g) renderPhotos(g.grid, g.sec, imgs, cat.label);
+          })
+          .catch(() => { /* 離線或 API 額度用完：保留 data.js 的底，不報錯 */ });
       });
     },
 
@@ -751,22 +813,30 @@
     },
 
     budget(node) {
-      const b = D.budget;
+      const b = D.budget || { currency: 'TWD', categories: [], note: '' };
       const grid = el('div', 'budget-grid');
-      b.categories.forEach((c) => {
-        const has = c.amount != null;
-        const amt = has ? `${b.currency} ${Number(c.amount).toLocaleString()}` : '待記錄';
-        grid.appendChild(
-          el('div', 'card budget-card',
-            `<div class="budget-card__label">${esc(c.label)}</div>
-             <div class="budget-card__amount ${has ? '' : 'empty'}">${esc(amt)}</div>`)
-        );
-      });
       node.appendChild(grid);
       const note = el('p', 'private-note');
       note.style.marginTop = 'var(--space-4)';
-      note.textContent = b.note;
+      note.textContent = b.note || '';
       node.appendChild(note);
+      const fill = (rows) => {
+        grid.innerHTML = '';
+        rows.forEach((c) => {
+          const has = c.amount != null;
+          const amt = has ? `${b.currency} ${Number(c.amount).toLocaleString()}` : '待記錄';
+          grid.appendChild(
+            el('div', 'card budget-card',
+              `<div class="budget-card__label">${esc(c.label)}</div>
+               <div class="budget-card__amount ${has ? '' : 'empty'}">${esc(amt)}</div>`)
+          );
+        });
+      };
+      fill(b.categories); // 先用 data.js 當底
+      // 即時讀 assets/budget.csv（手機改數字就更新；讀不到維持上面的底）
+      ghReadFile('assets/budget.csv')
+        .then((text) => { const rows = parseBudgetCSV(text); if (rows.length) fill(rows); })
+        .catch(() => {});
     },
   };
 
