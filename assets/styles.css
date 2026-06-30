@@ -426,10 +426,22 @@ ul { padding-left: 1.15em; }
 .check-cat h3 { font-size: var(--text-lg); display: flex; align-items: center; gap: var(--space-2); }
 .check-list { list-style: none; padding: 0; margin-top: var(--space-3); display: grid; gap: var(--space-2); }
 .check-list li { display: flex; gap: var(--space-3); align-items: flex-start; font-size: var(--text-sm); }
-.check-list li::before {
-  content: ""; flex: none; width: 18px; height: 18px; margin-top: 2px;
-  border: 2px solid var(--ocean); border-radius: 5px; background: var(--white);
+.check-list input[type="checkbox"] {
+  flex: none; width: 18px; height: 18px; margin-top: 2px;
+  accent-color: var(--ocean); cursor: pointer;
+  appearance: auto;
 }
+.check-list label { cursor: pointer; line-height: 1.4; }
+.check-list label.checked { text-decoration: line-through; color: var(--track-soft); }
+.checklist-reset {
+  display: block; margin-bottom: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm); font-family: inherit;
+  color: var(--track-soft); background: transparent;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  cursor: pointer; transition: color 150ms, border-color 150ms;
+}
+.checklist-reset:hover { color: var(--coral, #c0392b); border-color: var(--coral, #c0392b); }
 
 /* ---------------------------------------------------------------- Budget */
 .budget-grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
