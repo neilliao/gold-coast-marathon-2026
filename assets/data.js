@@ -58,7 +58,7 @@ window.TRIP_DATA = {
 
   /* ---------------------------------------------------------------- 航班 */
   flights: {
-    note: '航班代號與表定時間可先放；登機門、報到櫃台、實際機型會變動，出發前再查。',
+    note: '登機門與座位出發當日再查；報到截止前 60 分，建議提早 2.5 小時到機場。',
     segments: [
       {
         code: 'BR315',
@@ -68,6 +68,12 @@ window.TRIP_DATA = {
         depart: '2026-07-02 09:10',
         arrive: '2026-07-02 20:00',
         dir: '去程',
+        aircraft: 'Boeing 787-10（3-3-3，342 席）',
+        checkinDeadline: '08:10（起飛前 60 分）',
+        counter: '經濟艙 16–26 ／ 商務 14–15',
+        gate: '出發當日查詢',
+        status: '預計準時',
+        punctuality: '近 30 班起飛準時率 33%（平均延誤 39 分），但抵達準時率 100%（平均提早 17 分）',
       },
       {
         code: 'BR316',
@@ -77,28 +83,28 @@ window.TRIP_DATA = {
         depart: '2026-07-06 22:15',
         arrive: '2026-07-07 05:05 (+1)',
         dir: '回程',
+        aircraft: 'Boeing 787-10',
+        checkinDeadline: '出發前確認',
+        counter: '出發當日查詢（BNE 航廈）',
+        gate: '77（參考，當日可能異動）',
+        status: '—',
+        punctuality: '',
       },
     ],
-    // 出發前手動補：實際資訊會變動，不寫死
-    manualFields: [
-      { label: '報到櫃台', value: null },
-      { label: '登機門', value: null },
-      { label: '實際機型', value: null },
-      { label: '座位', value: null },
-    ],
     seatTips: [
-      '長程經濟艙若可選位，優先走道位，方便補水、上廁所、伸展。',
-      '想睡且不常起身，可考慮靠窗位。',
-      '避開廁所旁、廚房旁與最後一排，通常較吵、椅背角度也可能受限。',
-      '若有加價選位，可看逃生門排或前排，但要先確認規定與費用。',
-      '實際推薦座位等機型確認後，再對照官方座位圖。',
+      '✅ 強烈推薦：49A / 49K 或 52A / 52K（靠窗中前段，遠離後艙廚房廁所，全機最佳窗邊）。',
+      '✅ 腿部空間最大：第 41 排緊急出口（41A–C / 41H–K）或第 20 排隔板排，但腳前不能放行李。',
+      '❌ 避開：32A/K 與 53A/K（無窗戶）、第 35–36 排與 57–59 排（廚房廁所旁）。',
+      '❌ 避開中間位（B / E / J）：8 小時夾在中間很難受。',
+      '⚠️ 座位字母提醒：配置 A-B-C | D-E-G | H-J-K，無 F 和 I，訂位時別選錯。',
+      '💡 去程 09:10 出發，抵達布里斯本 20:00（當地冬天天黑早），飛行途中可盡量調整睡眠。',
     ],
     links: [
       { label: '桃園機場出發航班查詢', url: 'https://www.taoyuan-airport.com/flight_depart' },
       { label: '長榮航空 全球機場資訊', url: 'https://www.evaair.com/en-tw/fly-prepare/at-the-airport/worldwide-airports/' },
       { label: '長榮 787-10 機型/座位圖', url: 'https://www.evaair.com/en-us/fly-prepare/our-fleets/passenger-airplanes/787-10/' },
-      { label: '長榮 777-300ER 機型/座位圖', url: 'https://www.evaair.com/en-tw/fly-prepare/our-fleets/passenger-airplanes/777-300ER/' },
       { label: 'FlightAware 追蹤 BR315', url: 'https://www.flightaware.com/live/flight/EVA315' },
+      { label: 'FlightAware 追蹤 BR316', url: 'https://www.flightaware.com/live/flight/EVA316' },
     ],
   },
 

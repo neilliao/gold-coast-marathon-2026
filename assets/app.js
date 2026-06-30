@@ -273,15 +273,27 @@
       const f = D.flights;
       const grid = el('div', 'card-grid card-grid--2');
       f.segments.forEach((s) => {
+        const rows = [
+          ['起飛', s.depart],
+          ['抵達', s.arrive],
+          ['機型', s.aircraft || '確認中'],
+          ['報到截止', s.checkinDeadline || '—'],
+          ['報到櫃台', s.counter || '—'],
+          ['登機門', s.gate || '—'],
+          ['狀態', s.status || '—'],
+        ];
+        const kvHtml = rows.map(([k, v]) =>
+          `<div class="kv__row"><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`
+        ).join('');
+        const punctHtml = s.punctuality
+          ? `<p style="font-size:var(--text-sm);color:var(--track-soft);margin-top:.8rem;line-height:1.5">${esc(s.punctuality)}</p>`
+          : '';
         grid.appendChild(
           el('div', 'card',
             `<div class="day__head"><span class="chip chip--track">${esc(s.dir)}</span><strong style="font-family:var(--font-num);font-size:var(--text-xl)">${esc(s.code)}</strong></div>
             <div style="font-size:var(--text-lg);font-weight:700;margin-top:.6rem">${esc(s.from)} → ${esc(s.to)}</div>
-            <div class="kv" style="margin-top:.8rem">
-              <div class="kv__row"><dt>航空</dt><dd style="font-family:var(--font)">${esc(s.airline)}</dd></div>
-              <div class="kv__row"><dt>起飛</dt><dd>${esc(s.depart)}</dd></div>
-              <div class="kv__row"><dt>抵達</dt><dd>${esc(s.arrive)}</dd></div>
-            </div>`)
+            <div class="kv" style="margin-top:.8rem">${kvHtml}</div>
+            ${punctHtml}`)
         );
       });
       node.appendChild(grid);
@@ -289,13 +301,8 @@
       const manual = el('div', 'card');
       manual.style.marginTop = 'var(--space-4)';
       manual.innerHTML =
-        `<div class="eyebrow">出發前查詢</div>
+        `<div class="eyebrow">實用連結</div>
          <p class="section-lead" style="font-size:var(--text-base)">${esc(f.note)}</p>
-         <dl class="kv" style="margin-top:.8rem">` +
-        f.manualFields.map((m) =>
-          `<div class="kv__row"><dt>${esc(m.label)}</dt><dd class="${m.value ? '' : 'empty'}">${m.value ? esc(m.value) : '出發前查詢'}</dd></div>`
-        ).join('') +
-        `</dl>
          <div class="link-row" style="margin-top:1rem">` +
         f.links.map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join('') +
         `</div>`;
