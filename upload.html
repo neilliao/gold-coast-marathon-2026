@@ -8,6 +8,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, sans-serif; background: #111; color: #eee; min-height: 100dvh; padding: 1.5rem 1rem 3rem; }
     h1 { font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem; color: #fff; letter-spacing: .02em; }
+    h2 { font-size: 1rem; font-weight: 600; color: #ccc; margin: 2rem 0 .75rem; border-top: 1px solid #222; padding-top: 1.5rem; }
     label { display: block; font-size: .8rem; color: #999; margin-bottom: .35rem; }
     input[type=text], input[type=password], select {
       width: 100%; background: #1e1e1e; border: 1px solid #333; border-radius: 8px;
@@ -45,6 +46,20 @@
     .clear-btn:hover { color: #eee; }
     .warn { background: #422006; border: 1px solid #78350f; border-radius: 8px;
       color: #fbbf24; font-size: .8rem; padding: .6rem .75rem; margin-bottom: 1rem; line-height: 1.5; }
+    /* 管理區 */
+    #manage-cat { width: 100%; background: #1e1e1e; border: 1px solid #333; border-radius: 8px;
+      color: #eee; font-size: .9rem; padding: .5rem .75rem; margin-bottom: .75rem; }
+    .load-btn { background: #1e1e1e; border: 1px solid #444; border-radius: 8px;
+      color: #aaa; font-size: .85rem; padding: .5rem 1rem; cursor: pointer; margin-bottom: 1rem; }
+    .load-btn:hover { color: #eee; border-color: #888; }
+    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; }
+    .photo-card { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: #1e1e1e; }
+    .photo-card img { width: 100%; height: 100%; object-fit: cover; }
+    .del-btn { position: absolute; bottom: 4px; right: 4px;
+      background: rgba(220,38,38,.9); border: none; border-radius: 6px;
+      color: #fff; font-size: .7rem; padding: 3px 7px; cursor: pointer; }
+    .del-btn:disabled { background: #555; cursor: not-allowed; }
+    #manage-log { font-size: .8rem; line-height: 1.7; margin-top: .5rem; }
   </style>
 </head>
 <body>
@@ -81,19 +96,35 @@
 
   <div id="log"></div>
 
+  <!-- 管理區 -->
+  <h2>管理已上傳照片</h2>
+  <select id="manage-cat">
+    <option value="feed">旅程隨拍</option>
+    <option value="marathon">馬拉松</option>
+    <option value="gold-coast">黃金海岸</option>
+    <option value="brisbane">布里斯本</option>
+    <option value="food">飲食</option>
+    <option value="street">街景</option>
+    <option value="quiet">安靜片刻</option>
+  </select>
+  <button class="load-btn" id="load-btn">載入照片</button>
+  <div class="photo-grid" id="photo-grid"></div>
+  <div id="manage-log"></div>
+
   <script>
-  const OWNER = 'neilliao';
-  const REPO  = 'gold-coast-marathon-2026';
+  const OWNER  = 'neilliao';
+  const REPO   = 'gold-coast-marathon-2026';
   const BRANCH = 'main';
+  const RAW    = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/`;
+  const API    = `https://api.github.com/repos/${OWNER}/${REPO}/contents/`;
 
-  const patEl    = document.getElementById('pat');
-  const catEl    = document.getElementById('cat');
-  const pickEl   = document.getElementById('file-pick');
+  const patEl   = document.getElementById('pat');
+  const catEl   = document.getElementById('cat');
+  const pickEl  = document.getElementById('file-pick');
   const previews = document.getElementById('previews');
-  const btn      = document.getElementById('upload-btn');
-  const log      = document.getElementById('log');
+  const btn     = document.getElementById('upload-btn');
+  const log     = document.getElementById('log');
 
-  // Restore PAT from localStorage
   patEl.value = localStorage.getItem('gc_pat') || '';
   patEl.addEventListener('input', () => localStorage.setItem('gc_pat', patEl.value.trim()));
   document.getElementById('clear-pat').addEventListener('click', () => {
@@ -113,31 +144,24 @@
     files.push(f);
     const wrap = document.createElement('div');
     wrap.className = 'preview-item';
-    wrap.dataset.idx = idx;
     const img = document.createElement('img');
     img.src = URL.createObjectURL(f);
     const rm = document.createElement('button');
-    rm.className = 'rm';
-    rm.textContent = '×';
+    rm.className = 'rm'; rm.textContent = '×';
     rm.onclick = () => { files[idx] = null; wrap.remove(); updateBtn(); };
-    wrap.appendChild(img);
-    wrap.appendChild(rm);
+    wrap.appendChild(img); wrap.appendChild(rm);
     previews.appendChild(wrap);
   }
 
   function updateBtn() {
-    const hasFiles = files.some(f => f !== null);
-    const hasPat   = patEl.value.trim().length > 10;
-    btn.disabled = !(hasFiles && hasPat);
+    btn.disabled = !(files.some(f => f !== null) && patEl.value.trim().length > 10);
   }
-
   patEl.addEventListener('input', updateBtn);
 
-  function addLog(msg, cls) {
+  function addLog(msg, cls, el) {
     const p = document.createElement('p');
-    p.className = cls;
-    p.textContent = msg;
-    log.prepend(p);
+    p.className = cls; p.textContent = msg;
+    (el || log).prepend(p);
   }
 
   async function toBase64(file) {
@@ -149,49 +173,80 @@
     });
   }
 
-  btn.addEventListener('click', async () => {
-    btn.disabled = true;
-    btn.textContent = '上傳中…';
-    log.innerHTML = '';
-
+  function ghHeaders() {
     const pat = patEl.value.trim();
-    const cat = catEl.value;
-    const toUpload = files.filter(Boolean);
+    const h = { Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' };
+    if (pat) h.Authorization = 'Bearer ' + pat;
+    return h;
+  }
 
-    for (const file of toUpload) {
+  // ── 上傳 ──────────────────────────────────────────────
+  btn.addEventListener('click', async () => {
+    btn.disabled = true; btn.textContent = '上傳中…'; log.innerHTML = '';
+    const cat = catEl.value;
+    for (const file of files.filter(Boolean)) {
       const rand = Math.random().toString(36).slice(2, 8);
       const ext  = file.name.split('.').pop().toLowerCase() || 'jpg';
       const path = `assets/photos/${cat}/${rand}.${ext}`;
-      const url  = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`;
-
       addLog(`⬆ ${file.name} → ${path}`, 'info');
-
       try {
         const content = await toBase64(file);
-        const res = await fetch(url, {
-          method: 'PUT',
-          headers: {
-            Authorization: `Bearer ${pat}`,
-            Accept: 'application/vnd.github+json',
-            'Content-Type': 'application/json',
-          },
+        const res = await fetch(API + path, {
+          method: 'PUT', headers: ghHeaders(),
           body: JSON.stringify({ message: `photo: add ${cat}/${rand}.${ext}`, content, branch: BRANCH }),
         });
-
-        if (res.ok) {
-          addLog(`✓ ${file.name} 上傳成功`, 'ok');
-        } else {
-          const j = await res.json().catch(() => ({}));
-          addLog(`✗ ${file.name} 失敗 ${res.status}：${j.message || ''}`, 'err');
-        }
-      } catch (e) {
-        addLog(`✗ ${file.name} 錯誤：${e.message}`, 'err');
-      }
+        if (res.ok) addLog(`✓ ${file.name} 上傳成功`, 'ok');
+        else { const j = await res.json().catch(() => ({})); addLog(`✗ 失敗 ${res.status}：${j.message || ''}`, 'err'); }
+      } catch (e) { addLog(`✗ 錯誤：${e.message}`, 'err'); }
     }
-
-    btn.textContent = '上傳';
-    updateBtn();
+    btn.textContent = '上傳'; updateBtn();
   });
+
+  // ── 管理 ──────────────────────────────────────────────
+  const grid      = document.getElementById('photo-grid');
+  const mlog      = document.getElementById('manage-log');
+  const manageCat = document.getElementById('manage-cat');
+
+  document.getElementById('load-btn').addEventListener('click', loadPhotos);
+
+  async function loadPhotos() {
+    grid.innerHTML = '<p style="color:#666;font-size:.85rem">載入中…</p>';
+    mlog.innerHTML = '';
+    const cat = manageCat.value;
+    try {
+      const res = await fetch(API + `assets/photos/${cat}?ref=${BRANCH}`, { headers: ghHeaders() });
+      if (!res.ok) throw new Error(res.status);
+      const files = await res.json();
+      const imgs = Array.isArray(files) ? files.filter(f => f.type === 'file' && /\.(jpe?g|png|webp|gif|avif)$/i.test(f.name)) : [];
+      grid.innerHTML = '';
+      if (!imgs.length) { grid.innerHTML = '<p style="color:#666;font-size:.85rem">這個分類還沒有照片</p>'; return; }
+      imgs.forEach(f => {
+        const card = document.createElement('div');
+        card.className = 'photo-card';
+        const img = document.createElement('img');
+        img.src = RAW + f.path;
+        img.loading = 'lazy';
+        const delBtn = document.createElement('button');
+        delBtn.className = 'del-btn'; delBtn.textContent = '刪除';
+        delBtn.onclick = () => deletePhoto(f, delBtn, card);
+        card.appendChild(img); card.appendChild(delBtn);
+        grid.appendChild(card);
+      });
+    } catch (e) { grid.innerHTML = ''; addLog(`載入失敗：${e.message}`, 'err', mlog); }
+  }
+
+  async function deletePhoto(f, delBtn, card) {
+    if (!confirm(`確定刪除 ${f.name}？`)) return;
+    delBtn.disabled = true; delBtn.textContent = '…';
+    try {
+      const res = await fetch(API + f.path, {
+        method: 'DELETE', headers: ghHeaders(),
+        body: JSON.stringify({ message: `photo: delete ${f.path}`, sha: f.sha, branch: BRANCH }),
+      });
+      if (res.ok) { card.remove(); addLog(`✓ ${f.name} 已刪除`, 'ok', mlog); }
+      else { const j = await res.json().catch(() => ({})); addLog(`✗ 刪除失敗 ${res.status}：${j.message || ''}`, 'err', mlog); delBtn.disabled = false; delBtn.textContent = '刪除'; }
+    } catch (e) { addLog(`✗ 錯誤：${e.message}`, 'err', mlog); delBtn.disabled = false; delBtn.textContent = '刪除'; }
+  }
   </script>
 </body>
 </html>
