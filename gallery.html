@@ -41,6 +41,17 @@
       </div>
     </div>
     <section class="section wrap">
+      <details id="pat-setup" style="margin-bottom:1rem;background:#f5f0e8;border:1px solid #d4c9b0;border-radius:8px;padding:.6rem 1rem;">
+        <summary style="cursor:pointer;font-size:.85rem;color:#6b5e44;user-select:none;">🔑 設定 PAT（無 PAT 時照片可能顯示不出來）</summary>
+        <div style="margin-top:.6rem;display:flex;gap:.5rem;align-items:center;">
+          <input type="password" id="gallery-pat" placeholder="github_pat_..." autocomplete="off"
+            style="flex:1;padding:.4rem .6rem;border:1px solid #ccc;border-radius:6px;font-size:.85rem;" />
+          <button onclick="(function(){var v=document.getElementById('gallery-pat').value.trim();if(v){localStorage.setItem('gc_pat',v);document.getElementById('pat-setup').removeAttribute('open');location.reload();}})();"
+            style="padding:.4rem .8rem;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:.85rem;cursor:pointer;">儲存並重整</button>
+          <button onclick="localStorage.removeItem('gc_pat');location.reload();"
+            style="padding:.4rem .6rem;background:#e5e7eb;border:none;border-radius:6px;font-size:.85rem;cursor:pointer;">清除</button>
+        </div>
+      </details>
       <div data-render="gallery"></div>
     </section>
   </main>
