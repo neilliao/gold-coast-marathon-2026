@@ -442,6 +442,11 @@ ul { padding-left: 1.15em; }
   cursor: pointer; transition: background 150ms, opacity 150ms;
 }
 .checklist-reset:hover { opacity: 0.8; }
+.sync-bar { margin-bottom: var(--space-3); }
+.sync-status { font-size: .75rem; padding: .25rem .6rem; border-radius: 20px; background: #f0ede6; color: #6b5e44; }
+.sync-status.sync-ok   { background: #dcfce7; color: #166534; }
+.sync-status.sync-warn { background: #fef9c3; color: #854d0e; }
+.sync-status.sync-info { background: #e0f2fe; color: #075985; }
 
 /* ---------------------------------------------------------------- Budget */
 .budget-grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }

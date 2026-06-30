@@ -808,20 +808,57 @@
 
     checklist(node) {
       const STORE_KEY = 'gc2026-checklist';
-      const saved = (() => { try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch { return {}; } })();
-
+      const CL_PATH   = 'assets/checklist.json';
+      const RAW_URL   = `https://raw.githubusercontent.com/${GH.owner}/${GH.repo}/main/${CL_PATH}`;
+      let saved = (() => { try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch { return {}; } })();
       const allInputs = [];
+      let saveTimer = null;
+
+      // 同步狀態列
+      const statusBar = el('div', 'sync-bar');
+      const statusEl  = el('span', 'sync-status');
+      statusEl.textContent = '載入中…';
+      statusBar.appendChild(statusEl);
+      node.appendChild(statusBar);
+
+      function setStatus(text, mod) {
+        statusEl.textContent = text;
+        statusEl.className = 'sync-status' + (mod ? ' sync-' + mod : '');
+      }
+
+      async function saveToGitHub() {
+        const pat = (() => { try { return localStorage.getItem('gc_pat') || ''; } catch { return ''; } })();
+        if (!pat) { setStatus('⚠ 需設定 PAT 才能跨裝置同步', 'warn'); return; }
+        try {
+          const meta = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${CL_PATH}`, {
+            headers: { Authorization: `Bearer ${pat}`, Accept: 'application/vnd.github+json' },
+          }).then((r) => r.ok ? r.json() : null).catch(() => null);
+          const content = btoa(JSON.stringify(saved));
+          const body = { message: 'chore: sync checklist', content, branch: GH.branch };
+          if (meta && meta.sha) body.sha = meta.sha;
+          const res = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${CL_PATH}`, {
+            method: 'PUT',
+            headers: { Authorization: `Bearer ${pat}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+          setStatus(res.ok ? '已同步 ✓' : '同步失敗', res.ok ? 'ok' : 'warn');
+        } catch { setStatus('同步失敗', 'warn'); }
+      }
+
+      function schedSave() {
+        clearTimeout(saveTimer);
+        setStatus('儲存中…', 'info');
+        saveTimer = setTimeout(saveToGitHub, 2000);
+      }
 
       const resetBtn = document.createElement('button');
       resetBtn.className = 'checklist-reset';
       resetBtn.textContent = '重置全部';
       resetBtn.addEventListener('click', () => {
         if (!confirm('確定清除全部勾選？')) return;
-        allInputs.forEach((inp) => {
-          inp.checked = false;
-          inp._label.classList.remove('checked');
-        });
-        try { localStorage.removeItem(STORE_KEY); } catch {}
+        allInputs.forEach((inp) => { inp.checked = false; inp._label.classList.remove('checked'); saved[inp.id] = false; });
+        try { localStorage.setItem(STORE_KEY, JSON.stringify(saved)); } catch {}
+        schedSave();
       });
       node.appendChild(resetBtn);
 
@@ -847,6 +884,7 @@
             saved[id] = input.checked;
             try { localStorage.setItem(STORE_KEY, JSON.stringify(saved)); } catch {}
             label.classList.toggle('checked', input.checked);
+            schedSave();
           });
           allInputs.push(input);
           li.appendChild(input);
@@ -858,6 +896,20 @@
         grid.appendChild(catDiv);
       });
       node.appendChild(grid);
+
+      // 從 GitHub 讀最新狀態（raw URL 無需 auth，無限速）
+      fetch(RAW_URL + '?_=' + Date.now(), { cache: 'no-store' })
+        .then((r) => r.ok ? r.json() : {})
+        .then((remote) => {
+          Object.assign(saved, remote);
+          try { localStorage.setItem(STORE_KEY, JSON.stringify(saved)); } catch {}
+          allInputs.forEach((inp) => {
+            inp.checked = !!saved[inp.id];
+            inp._label.classList.toggle('checked', inp.checked);
+          });
+          setStatus('已同步 ✓', 'ok');
+        })
+        .catch(() => setStatus('離線模式', 'warn'));
     },
 
     budget(node) {
