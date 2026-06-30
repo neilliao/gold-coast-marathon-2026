@@ -787,19 +787,23 @@
         node.appendChild(sec);
         grids[cat.key] = { sec, grid };
       });
-      // 逐分類向 GitHub 即時抓 assets/photos/<分類>/ 內的照片
-      cats.forEach((cat) => {
-        ghListDir('assets/photos/' + cat.key)
-          .then((files) => {
+      // 讀靜態 photos.json（由 GitHub Actions 在每次 push 後自動產生，無 API 限速）
+      fetch('assets/photos.json?_=' + Date.now(), { cache: 'no-store' })
+        .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+        .then((manifest) => {
+          cats.forEach((cat) => {
+            const files = manifest[cat.key] || [];
             const imgs = files
-              .filter((f) => f.type === 'file' && IMG_RE.test(f.name))
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((f) => ({ src: f.download_url, alt: cat.label }));
+              .filter((name) => IMG_RE.test(name))
+              .map((name) => ({
+                src: 'https://raw.githubusercontent.com/neilliao/gold-coast-marathon-2026/main/assets/photos/' + cat.key + '/' + name,
+                alt: cat.label,
+              }));
             const g = grids[cat.key];
             if (g) renderPhotos(g.grid, g.sec, imgs, cat.label);
-          })
-          .catch(() => { /* 離線或 API 額度用完：保留 data.js 的底，不報錯 */ });
-      });
+          });
+        })
+        .catch(() => { /* photos.json 尚未產生或離線，維持 data.js 底 */ });
     },
 
     checklist(node) {

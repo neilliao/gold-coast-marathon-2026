@@ -1,0 +1,32 @@
+name: Update photo manifest
+on:
+  push:
+    paths:
+      - 'assets/photos/**'
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          python3 -c "
+          import os, json
+          base = 'assets/photos'
+          manifest = {}
+          exts = {'.jpg','.jpeg','.png','.webp','.gif','.avif'}
+          for cat in sorted(os.listdir(base)):
+              cat_path = os.path.join(base, cat)
+              if os.path.isdir(cat_path):
+                  files = sorted(f for f in os.listdir(cat_path)
+                                 if os.path.splitext(f)[1].lower() in exts)
+                  manifest[cat] = files
+          with open('assets/photos.json', 'w') as f:
+              json.dump(manifest, f, ensure_ascii=False)
+          print(manifest)
+          "
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: update photo manifest'
+          file_pattern: assets/photos.json
