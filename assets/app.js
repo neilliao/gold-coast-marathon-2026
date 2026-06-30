@@ -37,18 +37,20 @@
   const ghUrl = (path) =>
     `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${path}?ref=${GH.branch}`;
 
+  function ghHeaders(extra) {
+    const pat = (() => { try { return localStorage.getItem('gc_pat') || ''; } catch { return ''; } })();
+    const h = { Accept: extra || 'application/vnd.github+json' };
+    if (pat) h.Authorization = 'Bearer ' + pat;
+    return h;
+  }
   async function ghListDir(path) {
-    const res = await fetch(ghUrl(path), {
-      headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store',
-    });
+    const res = await fetch(ghUrl(path), { headers: ghHeaders(), cache: 'no-store' });
     if (!res.ok) throw new Error('gh dir ' + res.status);
     const arr = await res.json();
     return Array.isArray(arr) ? arr : [];
   }
   async function ghReadFile(path) {
-    const res = await fetch(ghUrl(path), {
-      headers: { Accept: 'application/vnd.github.raw' }, cache: 'no-store',
-    });
+    const res = await fetch(ghUrl(path), { headers: ghHeaders('application/vnd.github.raw'), cache: 'no-store' });
     if (!res.ok) throw new Error('gh file ' + res.status);
     return res.text();
   }
@@ -801,13 +803,55 @@
     },
 
     checklist(node) {
+      const STORE_KEY = 'gc2026-checklist';
+      const saved = (() => { try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch { return {}; } })();
+
+      const allInputs = [];
+
+      const resetBtn = document.createElement('button');
+      resetBtn.className = 'checklist-reset';
+      resetBtn.textContent = '重置全部';
+      resetBtn.addEventListener('click', () => {
+        if (!confirm('確定清除全部勾選？')) return;
+        allInputs.forEach((inp) => {
+          inp.checked = false;
+          inp._label.classList.remove('checked');
+        });
+        try { localStorage.removeItem(STORE_KEY); } catch {}
+      });
+      node.appendChild(resetBtn);
+
       const grid = el('div', 'card-grid card-grid--2');
       D.checklist.forEach((c) => {
-        grid.appendChild(
-          el('div', 'card check-cat',
-            `<h3>📋 ${esc(c.category)}</h3>
-             <ul class="check-list">${c.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>`)
-        );
+        const catDiv = el('div', 'card check-cat');
+        const heading = el('h3', '');
+        heading.textContent = '📋 ' + c.category;
+        const ul = el('ul', 'check-list');
+        c.items.forEach((item) => {
+          const id = 'chk-' + btoa(encodeURIComponent(c.category + ':' + item)).replace(/[^a-zA-Z0-9]/g, '').slice(0, 32);
+          const li = el('li', '');
+          const input = document.createElement('input');
+          input.type = 'checkbox';
+          input.id = id;
+          input.checked = !!saved[id];
+          const label = document.createElement('label');
+          label.htmlFor = id;
+          label.textContent = item;
+          if (input.checked) label.classList.add('checked');
+          input._label = label;
+          input.addEventListener('change', () => {
+            saved[id] = input.checked;
+            try { localStorage.setItem(STORE_KEY, JSON.stringify(saved)); } catch {}
+            label.classList.toggle('checked', input.checked);
+          });
+          allInputs.push(input);
+          li.appendChild(input);
+          li.appendChild(label);
+          ul.appendChild(li);
+        });
+        catDiv.appendChild(heading);
+        catDiv.appendChild(ul);
+        grid.appendChild(catDiv);
       });
       node.appendChild(grid);
     },
